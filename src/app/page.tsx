@@ -1,9 +1,7 @@
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import { db } from '@/lib/db'
 
 export default async function Home() {
-  const jars = await prisma.jar.findMany()
+  const jars = await db.jar.findMany()
 
   return (
     <main>
