@@ -1,4 +1,5 @@
 import { db } from '@/lib/db'
+import { createJar } from './actions/jars'
 
 export default async function Home() {
   const jars = await db.jar.findMany()
@@ -6,6 +7,11 @@ export default async function Home() {
   return (
     <main>
       <h1 className="mb-2 text-xl font-bold">Jars 🫙</h1>
+
+      <form action={createJar} className="mb-4">
+        <button className="rounded bg-gray-100 px-2">Add Jar</button>
+      </form>
+
       <ul className="list-inside list-disc">
         {jars.map((jar) => (
           <li key={jar.id}>
