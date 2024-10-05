@@ -12,11 +12,14 @@ export default async function Home() {
         <button className="rounded bg-gray-100 px-2">Add Jar</button>
       </form>
 
-      <ul className="list-inside list-disc">
+      <ul className="space-y-2">
         {jars.map((jar) => (
           <li key={jar.id}>
             <span className="font-medium">{jar.name}</span>・{jar.balance / 100}{' '}
             <span className="text-gray-400">{jar.currency}</span>
+            <p className="text-sm text-gray-300">
+              {jar.createdAt.toLocaleString()}
+            </p>
           </li>
         ))}
       </ul>
