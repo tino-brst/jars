@@ -8,31 +8,26 @@ async function Home() {
     },
   })
 
-  // TODO make the createJar action get the FormData directly (and validate it
-  // internally with zod or something like that)
-  async function formAction(formData: FormData) {
-    'use server'
-
-    await createJar({
-      data: {
-        name: formData.get('name') as string,
-        currency: 'USD',
-      },
-    })
-  }
-
   return (
     <main>
       <h1 className="mb-4 text-xl font-bold">Jars 🫙</h1>
 
-      <form action={formAction} className="mb-4 flex flex-col gap-2">
-        <input
-          required
-          type="text"
-          name="name"
-          placeholder="name"
-          className="rounded border"
-        />
+      <form action={createJar} className="mb-4 flex flex-col gap-2">
+        <fieldset className="flex gap-2">
+          <input
+            required
+            type="text"
+            name="name"
+            placeholder="name"
+            className="flex-1 rounded border"
+          />
+          <select name="currency" defaultValue="USD" required>
+            <option value="USD">USD</option>
+            <option value="ARS">ARS</option>
+            <option value="EUR">EUR</option>
+          </select>
+        </fieldset>
+
         <button className="rounded bg-gray-100 px-2">Add Jar</button>
       </form>
 
