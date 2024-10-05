@@ -4,11 +4,29 @@ import { createJar } from './actions/jars'
 async function Home() {
   const jars = await db.jar.findMany()
 
+  async function formAction(formData: FormData) {
+    'use server'
+
+    await createJar({
+      data: {
+        name: formData.get('name') as string,
+        currency: 'USD',
+      },
+    })
+  }
+
   return (
     <main>
       <h1 className="mb-4 text-xl font-bold">Jars 🫙</h1>
 
-      <form action={createJar} className="mb-4">
+      <form action={formAction} className="mb-4 flex flex-col gap-2">
+        <input
+          required
+          type="text"
+          name="name"
+          placeholder="name"
+          className="rounded border"
+        />
         <button className="rounded bg-gray-100 px-2">Add Jar</button>
       </form>
 
