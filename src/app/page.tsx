@@ -1,7 +1,7 @@
 import { db } from '@/lib/db'
 import { createJar } from './actions/jars'
 
-export default async function Home() {
+async function Home() {
   const jars = await db.jar.findMany()
 
   return (
@@ -26,3 +26,5 @@ export default async function Home() {
     </main>
   )
 }
+
+export default Home
