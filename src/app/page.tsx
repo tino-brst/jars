@@ -1,9 +1,11 @@
 import { db } from '@/lib/db'
-import { createJar } from './actions/jars'
+import { createJar } from '../actions/jars'
 
 async function Home() {
   const jars = await db.jar.findMany()
 
+  // TODO make the createJar action get the FormData directly (and validate it
+  // internally with zod or something like that)
   async function formAction(formData: FormData) {
     'use server'
 
