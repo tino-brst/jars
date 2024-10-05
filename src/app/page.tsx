@@ -7,10 +7,14 @@ export default async function Home() {
 
   return (
     <main>
-      <h1>Jars 🫙</h1>
-      <ul>
+      <h1 className="mb-2 text-xl font-bold">Jars 🫙</h1>
+      <ul className="list-inside list-disc">
         {jars.map((jar) => (
-          <li key={jar.id}>{jar.name}</li>
+          <li key={jar.id}>
+            <span className="font-medium">{jar.name}</span> ・{' '}
+            {jar.balance / 100}{' '}
+            <span className="text-gray-400">{jar.currency}</span>
+          </li>
         ))}
       </ul>
     </main>
