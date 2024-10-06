@@ -5,7 +5,7 @@ function Input({ className, ...props }: ComponentPropsWithRef<'input'>) {
   return (
     <input
       {...props}
-      className={twMerge('rounded-lg border px-2 py-0.5', className)}
+      className={twMerge('rounded-lg border px-3 py-0.5', className)}
     />
   )
 }

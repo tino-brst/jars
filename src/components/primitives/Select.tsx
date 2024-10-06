@@ -12,14 +12,14 @@ function Select({
       <select
         {...props}
         className={twMerge(
-          'cursor-pointer appearance-none rounded-full border bg-white py-0.5 pl-2 pr-6 font-medium shadow-sm',
+          'cursor-pointer appearance-none rounded-full border bg-white py-0.5 pl-3 pr-7 font-medium shadow-sm',
           className,
         )}
       >
         {children}
       </select>
       <ChevronSelectorVerticalIcon
-        className="absolute right-1.5 text-gray-500"
+        className="absolute right-2 text-gray-500"
         size={18}
       />
     </div>
