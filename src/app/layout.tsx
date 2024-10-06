@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import { Inter } from 'next/font/google'
+import { NavLink } from '@/components/NavLink'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -16,7 +17,14 @@ const metadata: Metadata = {
 function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={inter.variable}>
-      <body className="p-4">{children}</body>
+      <body className="p-4">
+        {children}
+
+        <nav className="fixed inset-x-0 bottom-0 flex justify-around border-t-[0.5px] border-t-black/5 bg-white/90 py-4 backdrop-blur">
+          <NavLink href="/">Jars</NavLink>
+          <NavLink href="/transactions">Transactions</NavLink>
+        </nav>
+      </body>
     </html>
   )
 }
