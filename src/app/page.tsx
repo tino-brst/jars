@@ -3,6 +3,7 @@ import { createJar } from '../actions/jars'
 import { Button } from '@/components/primitives/Button'
 import { CreateJarDialogTrigger } from '@/components/CreateJarDialogTrigger'
 import { Select } from '@/components/primitives/Select'
+import { Input } from '@/components/primitives/Input'
 
 async function Home() {
   const jars = await db.jar.findMany({
@@ -17,12 +18,12 @@ async function Home() {
 
       <form action={createJar} className="mb-4 flex flex-col gap-2">
         <fieldset className="flex gap-2">
-          <input
+          <Input
             required
             type="text"
             name="name"
             placeholder="name"
-            className="flex-1 rounded border"
+            className="flex-1"
           />
 
           <Select name="currency" defaultValue="USD" required>
