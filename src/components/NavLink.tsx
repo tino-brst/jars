@@ -8,7 +8,7 @@ function NavLink({ className, ...props }: ComponentProps<typeof Link>) {
   return (
     <Link
       className={twMerge(
-        'text-sm font-medium opacity-50',
+        'text-sm font-medium opacity-40',
         'data-[active]:opacity-100',
         className,
       )}
