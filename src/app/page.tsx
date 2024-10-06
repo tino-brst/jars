@@ -1,5 +1,6 @@
 import { db } from '@/lib/db'
 import { createJar } from '../actions/jars'
+import { Button } from '@/components/Button'
 
 async function Home() {
   const jars = await db.jar.findMany({
@@ -29,7 +30,7 @@ async function Home() {
           </select>
         </fieldset>
 
-        <button className="rounded bg-gray-100 px-2">Add Jar</button>
+        <Button>Add Jar</Button>
       </form>
 
       <ol className="grid grid-cols-[repeat(auto-fill,minmax(min(8rem,100%),1fr))] gap-4">
