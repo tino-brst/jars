@@ -1,5 +1,5 @@
 import { db } from '@/lib/db'
-import { createJar } from '../actions/jars'
+import { createJar } from '@/actions/jars'
 import { Button } from '@/components/primitives/Button'
 import { Select } from '@/components/primitives/Select'
 import { Input } from '@/components/primitives/Input'
@@ -16,15 +16,24 @@ async function Home() {
       <h1 className="mb-4 text-3xl font-bold">Jars</h1>
 
       <form action={createJar} className="mb-4 flex flex-col gap-2">
-        <fieldset className="flex gap-2">
-          <Input required type="text" name="name" className="flex-1" />
+        <div className="flex flex-col gap-2">
+          <Input required type="text" name="name" />
 
-          <Select name="currency" defaultValue="USD" required>
-            <option value="USD">USD</option>
-            <option value="ARS">ARS</option>
-            <option value="EUR">EUR</option>
-          </Select>
-        </fieldset>
+          <div className="flex gap-2">
+            <Input
+              type="number"
+              name="balance"
+              className="flex-1"
+              step="0.01"
+              min="0"
+            />
+            <Select name="currency" defaultValue="USD" required>
+              <option value="USD">USD</option>
+              <option value="ARS">ARS</option>
+              <option value="EUR">EUR</option>
+            </Select>
+          </div>
+        </div>
 
         <Button>Add Jar</Button>
       </form>

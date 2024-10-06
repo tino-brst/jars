@@ -9,13 +9,14 @@ import { Currency } from '@prisma/client'
 const schema = z.object({
   name: z.string(),
   currency: z.nativeEnum(Currency),
+  balance: z.coerce.number().nonnegative().step(0.01),
 })
 
 async function createJar(formData: FormData) {
   const parse = schema.safeParse(Object.fromEntries(formData))
 
   if (!parse.success) {
-    return
+    throw parse.error.issues
   }
 
   await db.jar.create({ data: parse.data })
