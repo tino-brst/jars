@@ -13,7 +13,7 @@ async function Home() {
 
   return (
     <main>
-      <h1 className="mb-4 text-xl font-bold">Jars</h1>
+      <h1 className="mb-4 text-3xl font-bold">Jars</h1>
 
       <form action={createJar} className="mb-4 flex flex-col gap-2">
         <fieldset className="flex gap-2">
