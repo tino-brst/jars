@@ -26,7 +26,7 @@ async function createJar(formData: FormData) {
   await db.jar.create({ data: parse.data })
 
   // TODO the revalidate should be specific to jars, not all of the things
-  revalidatePath('/')
+  revalidatePath('/', 'layout')
 }
 
 export { createJar }

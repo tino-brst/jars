@@ -36,7 +36,7 @@ async function createReceivedTransaction(formData: FormData) {
   })
 
   // TODO the revalidate should be specific to jars, not all of the things
-  revalidatePath('/')
+  revalidatePath('/', 'layout')
 }
 
 export { createReceivedTransaction }
