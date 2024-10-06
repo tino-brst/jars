@@ -4,10 +4,10 @@ import {
   TransactionType,
   SentTransaction,
   ReceivedTransaction,
+  Jar,
 } from '@prisma/client'
 
-type Transaction = Omit<BaseTransaction, 'type'> &
-  (
+type Transaction = Omit<BaseTransaction, 'type' | 'jarId'> & { jar: Jar } & (
     | (Omit<ReceivedTransaction, 'id' | 'transactionId'> & {
         type: typeof TransactionType.RECEIVED
       })
@@ -22,6 +22,7 @@ async function Transactions() {
       include: {
         sentTransaction: true,
         receivedTransaction: true,
+        jar: true,
       },
       orderBy: {
         createdAt: 'desc',
