@@ -9,16 +9,49 @@ datasource db {
 }
 
 model Jar {
-  id        String   @id @default(uuid())
-  name      String
-  currency  Currency
-  balance   Int      @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String        @id @default(uuid()) @db.Uuid
+  name         String
+  currency     Currency
+  balance      Int           @default(0) // TODO add non-negative checks
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  transactions Transaction[]
 }
 
 enum Currency {
   USD
   ARS
   EUR
+}
+
+model Transaction {
+  id                  String               @id @default(uuid()) @db.Uuid
+  jarId               String               @db.Uuid
+  jar                 Jar                  @relation(fields: [jarId], references: [id])
+  type                TransactionType
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  sentTransaction     SentTransaction?
+  receivedTransaction ReceivedTransaction?
+}
+
+enum TransactionType {
+  SENT
+  RECEIVED
+}
+
+model SentTransaction {
+  id            String      @id @default(uuid()) @db.Uuid
+  transactionId String      @unique @db.Uuid
+  transaction   Transaction @relation(fields: [transactionId], references: [id])
+  amount        Int         @default(0) // TODO add non-negative checks
+  counterparty  String
+}
+
+model ReceivedTransaction {
+  id            String      @id @default(uuid()) @db.Uuid
+  transactionId String      @unique @db.Uuid
+  transaction   Transaction @relation(fields: [transactionId], references: [id])
+  amount        Int         @default(0) // TODO add non-negative checks
+  counterparty  String
 }
