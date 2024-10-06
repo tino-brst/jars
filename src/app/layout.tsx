@@ -20,7 +20,7 @@ function RootLayout({ children }: { children: React.ReactNode }) {
       <body className="p-4">
         {children}
 
-        <nav className="fixed inset-x-0 bottom-0 flex justify-around border-t-[0.5px] border-t-black/5 bg-white/90 py-4 backdrop-blur">
+        <nav className="fixed inset-x-0 bottom-0 flex justify-around bg-white/90 py-4 ring-[0.5px] ring-black/30 backdrop-blur">
           <NavLink href="/">Jars</NavLink>
           <NavLink href="/transactions">Transactions</NavLink>
         </nav>
