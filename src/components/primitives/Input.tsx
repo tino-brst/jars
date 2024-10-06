@@ -11,7 +11,7 @@ function Input({
     <input
       name={name}
       placeholder={placeholder}
-      className={twMerge('rounded-lg border px-3 py-0.5', className)}
+      className={twMerge('min-w-0 rounded-lg border px-3 py-0.5', className)}
       {...props}
     />
   )
