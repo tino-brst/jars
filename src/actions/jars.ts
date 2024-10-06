@@ -9,7 +9,11 @@ import { Currency } from '@prisma/client'
 const schema = z.object({
   name: z.string(),
   currency: z.nativeEnum(Currency),
-  balance: z.coerce.number().nonnegative().step(0.01),
+  balance: z.coerce
+    .number()
+    .nonnegative()
+    .step(0.01)
+    .transform((value) => value * 100),
 })
 
 async function createJar(formData: FormData) {
