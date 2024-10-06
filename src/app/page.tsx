@@ -1,7 +1,6 @@
 import { db } from '@/lib/db'
 import { createJar } from '../actions/jars'
 import { Button } from '@/components/primitives/Button'
-import { CreateJarDialogTrigger } from '@/components/CreateJarDialogTrigger'
 import { Select } from '@/components/primitives/Select'
 import { Input } from '@/components/primitives/Input'
 
