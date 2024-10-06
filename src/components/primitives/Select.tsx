@@ -10,11 +10,11 @@ function Select({
   return (
     <div className="relative inline-flex w-fit items-center">
       <select
-        {...props}
         className={twMerge(
           'cursor-pointer appearance-none rounded-full border bg-white py-0.5 pl-3 pr-7 font-medium shadow-sm',
           className,
         )}
+        {...props}
       >
         {children}
       </select>

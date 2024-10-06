@@ -17,13 +17,7 @@ async function Home() {
 
       <form action={createJar} className="mb-4 flex flex-col gap-2">
         <fieldset className="flex gap-2">
-          <Input
-            required
-            type="text"
-            name="name"
-            placeholder="name"
-            className="flex-1"
-          />
+          <Input required type="text" name="name" className="flex-1" />
 
           <Select name="currency" defaultValue="USD" required>
             <option value="USD">USD</option>
