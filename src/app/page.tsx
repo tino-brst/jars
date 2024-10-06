@@ -1,8 +1,8 @@
 import { db } from '@/lib/db'
 import { createJar } from '@/actions/jars'
-import { Button } from '@/components/primitives/Button'
 import { Select } from '@/components/primitives/Select'
 import { Input } from '@/components/primitives/Input'
+import { AddJarSubmitButton } from '@/components/AddJarSubmitButton'
 
 async function Home() {
   const jars = await db.jar.findMany({
@@ -35,7 +35,7 @@ async function Home() {
           </div>
         </div>
 
-        <Button>Add Jar</Button>
+        <AddJarSubmitButton />
       </form>
 
       <ol className="grid grid-cols-[repeat(auto-fill,minmax(min(8rem,100%),1fr))] gap-4">
