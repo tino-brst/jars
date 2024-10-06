@@ -1,6 +1,6 @@
 import { ComponentPropsWithRef } from 'react'
 import { twMerge } from 'tailwind-merge'
-import { ChevronSelectorVerticalIcon } from './icons/ChevronSelectorVerticalIcon'
+import { ChevronSelectorVerticalIcon } from '../icons/ChevronSelectorVerticalIcon'
 
 function Select({
   className,

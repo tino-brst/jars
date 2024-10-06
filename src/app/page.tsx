@@ -1,8 +1,8 @@
 import { db } from '@/lib/db'
 import { createJar } from '../actions/jars'
-import { Button } from '@/components/Button'
+import { Button } from '@/components/primitives/Button'
 import { CreateJarDialogTrigger } from '@/components/CreateJarDialogTrigger'
-import { Select } from '@/components/Select'
+import { Select } from '@/components/primitives/Select'
 
 async function Home() {
   const jars = await db.jar.findMany({
