@@ -8,10 +8,10 @@ function Select({
   ...props
 }: ComponentPropsWithRef<'select'>) {
   return (
-    <div className="relative inline-flex w-fit items-center">
+    <div className="relative flex items-center">
       <select
         className={twMerge(
-          'cursor-pointer appearance-none rounded-full border bg-white py-0.5 pl-3 pr-7 font-medium shadow-sm',
+          'w-full cursor-pointer appearance-none rounded-full border bg-white py-0.5 pl-3 pr-7 font-medium shadow-sm',
           className,
         )}
         {...props}

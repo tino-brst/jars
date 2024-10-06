@@ -16,7 +16,7 @@ async function Home() {
     <main>
       <h1 className="mb-4 text-3xl font-bold">Jars</h1>
 
-      <form action={createJar} className="mb-4 flex flex-col gap-2">
+      <form action={createJar} className="mb-6 flex flex-col gap-2">
         <div className="flex flex-col gap-2">
           <Input required type="text" name="name" />
 
@@ -39,7 +39,7 @@ async function Home() {
         <AddJarSubmitButton />
       </form>
 
-      <ol className="grid grid-cols-[repeat(auto-fill,minmax(min(8rem,100%),1fr))] gap-4">
+      <ol className="grid grid-cols-[repeat(auto-fill,minmax(min(8rem,100%),1fr))] gap-2">
         {jars.map((jar) => (
           <li className="flex flex-col gap-1 rounded-xl bg-gray-100 px-3 py-2">
             <p className="truncate font-medium">{jar.name}</p>
