@@ -1,6 +1,8 @@
 import { db } from '@/lib/db'
 import { createJar } from '../actions/jars'
 import { Button } from '@/components/Button'
+import { CreateJarDialogTrigger } from '@/components/CreateJarDialogTrigger'
+import { Select } from '@/components/Select'
 
 async function Home() {
   const jars = await db.jar.findMany({
@@ -23,11 +25,11 @@ async function Home() {
             className="flex-1 rounded border"
           />
 
-          <select name="currency" defaultValue="USD" required>
+          <Select name="currency" defaultValue="USD" required>
             <option value="USD">USD</option>
             <option value="ARS">ARS</option>
             <option value="EUR">EUR</option>
-          </select>
+          </Select>
         </fieldset>
 
         <Button>Add Jar</Button>
