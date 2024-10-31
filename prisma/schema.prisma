@@ -9,13 +9,14 @@ datasource db {
 }
 
 model Jar {
-  id           String        @id @default(uuid()) @db.Uuid
-  name         String
-  currency     Currency
-  balance      Int           @default(0) // TODO remove this field once its part of the materialized view, the initial value can be an initial received transaction
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  transactions Transaction[]
+  id                  String                @id @default(uuid()) @db.Uuid
+  name                String
+  currency            Currency
+  balance             Int                   @default(0) // TODO remove this field once its part of the materialized view, the initial value can be an initial received transaction
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  SentTransaction     SentTransaction[]
+  ReceivedTransaction ReceivedTransaction[]
 }
 
 enum Currency {
@@ -26,8 +27,6 @@ enum Currency {
 
 model Transaction {
   id                  String               @id @default(uuid()) @db.Uuid
-  jarId               String               @db.Uuid // Affected/source Jar
-  jar                 Jar                  @relation(fields: [jarId], references: [id])
   type                TransactionType
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
@@ -45,7 +44,9 @@ model SentTransaction {
   id            String      @id @default(uuid()) @db.Uuid
   transactionId String      @unique @db.Uuid
   transaction   Transaction @relation(fields: [transactionId], references: [id]) // TODO cascade delete & update
-  amount        Int         @default(0) // Negative value
+  jarId         String      @db.Uuid
+  jar           Jar         @relation(fields: [jarId], references: [id])
+  amount        Int         @default(0) // TODO add db level checks for negative values
   counterparty  String
 }
 
@@ -53,7 +54,9 @@ model ReceivedTransaction {
   id            String      @id @default(uuid()) @db.Uuid
   transactionId String      @unique @db.Uuid
   transaction   Transaction @relation(fields: [transactionId], references: [id]) // TODO cascade delete & update
-  amount        Int         @default(0) // Positive value
+  jarId         String      @db.Uuid
+  jar           Jar         @relation(fields: [jarId], references: [id])
+  amount        Int         @default(0) // TODO add db level checks for positive values
   counterparty  String
 }
 
@@ -61,8 +64,9 @@ model MoveTransaction {
   id            String      @id @default(uuid()) @db.Uuid
   transactionId String      @unique @db.Uuid
   transaction   Transaction @relation(fields: [transactionId], references: [id]) // TODO cascade delete & update
-  amount        Int         @default(0) // Negative value
+  fromJarId     String      @db.Uuid
+  fromAmount    Int         @default(0) // TODO add db level checks for negative values
   toJarId       String      @db.Uuid
-  toAmount      Int         @default(0) // Positive value
+  toAmount      Int         @default(0) // TODO add db level checks for positive values
   // TODO add conversion rate and diff fields to account for fees
 }

@@ -13,11 +13,11 @@ import {
 } from '@prisma/client'
 import React from 'react'
 
-type Transaction = Omit<BaseTransaction, 'type' | 'jarId'> & { jar: Jar } & (
-    | (Omit<ReceivedTransaction, 'id' | 'transactionId'> & {
+type Transaction = Omit<BaseTransaction, 'type'> & { jar: Jar } & (
+    | (Omit<ReceivedTransaction, 'id' | 'transactionId' | 'jarId'> & {
         type: typeof TransactionType.RECEIVED
       })
-    | (Omit<SentTransaction, 'id' | 'transactionId'> & {
+    | (Omit<SentTransaction, 'id' | 'transactionId' | 'jarId'> & {
         type: typeof TransactionType.SENT
       })
   )
@@ -26,9 +26,16 @@ async function Transactions() {
   const transactions = (
     await db.transaction.findMany({
       include: {
-        sentTransaction: true,
-        receivedTransaction: true,
-        jar: true,
+        sentTransaction: {
+          include: {
+            jar: true,
+          },
+        },
+        receivedTransaction: {
+          include: {
+            jar: true,
+          },
+        },
       },
       orderBy: {
         createdAt: 'desc',

@@ -24,10 +24,10 @@ async function createReceivedTransaction(formData: FormData) {
 
   await db.transaction.create({
     data: {
-      jarId: parse.data.jarId,
       type: 'RECEIVED',
       receivedTransaction: {
         create: {
+          jarId: parse.data.jarId,
           counterparty: parse.data.counterparty,
           amount: parse.data.amount,
         },
