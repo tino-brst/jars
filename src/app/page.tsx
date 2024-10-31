@@ -41,7 +41,10 @@ async function Home() {
 
       <ol className="grid grid-cols-[repeat(auto-fill,minmax(min(8rem,100%),1fr))] gap-2">
         {jars.map((jar) => (
-          <li className="flex flex-col gap-1 rounded-xl bg-gray-100 px-3 py-2">
+          <li
+            key={jar.id}
+            className="flex flex-col gap-1 rounded-xl bg-gray-100 px-3 py-2"
+          >
             <p className="truncate font-medium">{jar.name}</p>
             <div className="flex items-baseline gap-1">
               <p className="text-2xl font-medium">{jar.balance / 100}</p>

@@ -87,7 +87,7 @@ async function Transactions() {
             <p>to</p>
             <Select required name="jarId">
               {jars.map((jar) => (
-                <option value={jar.id}>
+                <option value={jar.id} key={jar.id}>
                   {jar.name} ({jar.currency})
                 </option>
               ))}
