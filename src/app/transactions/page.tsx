@@ -118,7 +118,10 @@ async function Transactions() {
         {transactions.map((transaction) => (
           <>
             {transaction.type === 'RECEIVED' && (
-              <li className="flex items-center justify-between rounded-xl bg-gray-100 px-3 py-2">
+              <li
+                key={transaction.id}
+                className="flex items-center justify-between rounded-xl bg-gray-100 px-3 py-2"
+              >
                 <div className="flex items-center gap-4">
                   <div className="flex w-fit items-center justify-center rounded-full bg-gray-200 p-1">
                     <ArrowDownIcon size={24} />
