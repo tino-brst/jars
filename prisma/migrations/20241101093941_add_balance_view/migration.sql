@@ -1,4 +1,4 @@
-CREATE MATERIALIZED VIEW "JarBalance" AS
+CREATE VIEW "JarBalance" AS
 SELECT
   bu."jarId" AS "jarId",
   COALESCE(SUM(bu.amount), 0) AS balance

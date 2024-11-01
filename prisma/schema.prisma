@@ -10,14 +10,12 @@ datasource db {
 }
 
 // TODO rename SentTransaction, ReceivedTransaction, etc (sentTransaction, receivedTransaction)
-// TODO rename JarBalance to balance?
 model Jar {
   id                  String                @id @default(uuid()) @db.Uuid
   name                String
   currency            Currency
   createdAt           DateTime              @default(now())
   updatedAt           DateTime              @updatedAt
-  JarBalance          JarBalance?
   SentTransaction     SentTransaction[]
   ReceivedTransaction ReceivedTransaction[]
   MoveFromTransaction MoveTransaction[]     @relation("MoveFromTransaction")
@@ -85,6 +83,5 @@ view JarBalanceUpdate {
 
 view JarBalance {
   jarId   String @id @unique @db.Uuid
-  jar     Jar    @relation(fields: [jarId], references: [id])
   balance Int
 }
