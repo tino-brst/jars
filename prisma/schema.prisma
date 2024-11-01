@@ -59,6 +59,7 @@ model ReceivedTransaction {
   counterparty  String
 }
 
+// TODO jar @relations
 model MoveTransaction {
   transactionId String      @id @unique @db.Uuid
   transaction   Transaction @relation(fields: [transactionId], references: [id]) // TODO cascade delete & update
@@ -67,4 +68,12 @@ model MoveTransaction {
   toJarId       String      @db.Uuid
   toAmount      Int         @default(0) // TODO add db level checks for positive values
   // TODO add conversion rate and diff fields to account for fees
+}
+
+view JarBalanceUpdate {
+  transactionId String @db.Uuid
+  jarId         String @db.Uuid
+  amount        Int
+
+  @@unique([transactionId, jarId])
 }

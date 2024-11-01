@@ -3,6 +3,7 @@ CREATE VIEW "JarBalanceUpdate" AS
 -- Sent transactions
 
 SELECT
+  st."transactionId" AS "transactionId",
   st."jarId" AS "jarId",
   st."amount" AS amount
 FROM
@@ -13,6 +14,7 @@ UNION ALL
 -- Received transactions
 
 SELECT
+  rt."transactionId" AS "transactionId",
   rt."jarId" AS "jarId",
   rt."amount" AS amount
 FROM
@@ -23,6 +25,7 @@ UNION ALL
 -- Move transactions
 
 SELECT
+  mt."transactionId" AS "transactionId",
   mt."fromJarId" AS "jarId",
   mt."fromAmount" AS amount
 FROM
@@ -31,6 +34,7 @@ FROM
 UNION ALL
 
 SELECT
+  mt."transactionId" AS "transactionId",
   mt."toJarId" AS "jarId",
   mt."toAmount" AS amount
 FROM
