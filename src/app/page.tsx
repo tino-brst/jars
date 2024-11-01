@@ -10,6 +10,9 @@ async function Home() {
     orderBy: {
       createdAt: 'desc',
     },
+    include: {
+      JarBalance: true,
+    },
   })
 
   return (
@@ -47,7 +50,9 @@ async function Home() {
           >
             <p className="truncate font-medium">{jar.name}</p>
             <div className="flex items-baseline gap-1">
-              <p className="text-2xl font-medium">{jar.balance / 100}</p>
+              <p className="text-2xl font-medium">
+                {jar.JarBalance?.balance ?? 0 / 100}
+              </p>
               <p className="text-gray-400">{jar.currency}</p>
             </div>
           </li>
