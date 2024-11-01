@@ -14,10 +14,10 @@ import {
 import React from 'react'
 
 type Transaction = Omit<BaseTransaction, 'type'> & { jar: Jar } & (
-    | (Omit<ReceivedTransaction, 'id' | 'transactionId' | 'jarId'> & {
+    | (Omit<ReceivedTransaction, 'transactionId' | 'jarId'> & {
         type: typeof TransactionType.RECEIVED
       })
-    | (Omit<SentTransaction, 'id' | 'transactionId' | 'jarId'> & {
+    | (Omit<SentTransaction, 'transactionId' | 'jarId'> & {
         type: typeof TransactionType.SENT
       })
   )

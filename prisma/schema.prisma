@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["views"]
 }
 
 datasource db {
@@ -41,8 +42,7 @@ enum TransactionType {
 }
 
 model SentTransaction {
-  id            String      @id @default(uuid()) @db.Uuid
-  transactionId String      @unique @db.Uuid
+  transactionId String      @id @unique @db.Uuid
   transaction   Transaction @relation(fields: [transactionId], references: [id]) // TODO cascade delete & update
   jarId         String      @db.Uuid
   jar           Jar         @relation(fields: [jarId], references: [id])
@@ -51,8 +51,7 @@ model SentTransaction {
 }
 
 model ReceivedTransaction {
-  id            String      @id @default(uuid()) @db.Uuid
-  transactionId String      @unique @db.Uuid
+  transactionId String      @id @unique @db.Uuid
   transaction   Transaction @relation(fields: [transactionId], references: [id]) // TODO cascade delete & update
   jarId         String      @db.Uuid
   jar           Jar         @relation(fields: [jarId], references: [id])
@@ -61,8 +60,7 @@ model ReceivedTransaction {
 }
 
 model MoveTransaction {
-  id            String      @id @default(uuid()) @db.Uuid
-  transactionId String      @unique @db.Uuid
+  transactionId String      @id @unique @db.Uuid
   transaction   Transaction @relation(fields: [transactionId], references: [id]) // TODO cascade delete & update
   fromJarId     String      @db.Uuid
   fromAmount    Int         @default(0) // TODO add db level checks for negative values
