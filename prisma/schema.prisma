@@ -9,12 +9,15 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+// TODO rename SentTransaction, ReceivedTransaction, etc (sentTransaction, receivedTransaction)
+// TODO rename JarBalance to balance?
 model Jar {
   id                  String                @id @default(uuid()) @db.Uuid
   name                String
   currency            Currency
   createdAt           DateTime              @default(now())
   updatedAt           DateTime              @updatedAt
+  JarBalance          JarBalance?
   SentTransaction     SentTransaction[]
   ReceivedTransaction ReceivedTransaction[]
   MoveFromTransaction MoveTransaction[]     @relation("MoveFromTransaction")
@@ -78,4 +81,10 @@ view JarBalanceUpdate {
   amount        Int
 
   @@unique([transactionId, jarId])
+}
+
+view JarBalance {
+  jarId   String @id @unique @db.Uuid
+  jar     Jar    @relation(fields: [jarId], references: [id])
+  balance Int
 }
