@@ -56,12 +56,21 @@ async function Transactions() {
     })
   )
     .map<Transaction | null>((transaction) => {
-      // TODO support INIT transactions
+      if (transaction.type === 'INIT' && transaction.initTransaction) {
+        return {
+          ...transaction,
+          ...transaction.initTransaction,
+          // For some reason, even if transaction.type is correctly typed here
+          // ('INIT'), leaving it as part of ...transaction makes TS complain 🤷🏻‍♂️
+          type: transaction.type,
+        }
+      }
 
       if (transaction.type === 'RECEIVED' && transaction.receivedTransaction) {
         return {
           ...transaction,
           ...transaction.receivedTransaction,
+          type: transaction.type,
         }
       }
 
@@ -69,6 +78,7 @@ async function Transactions() {
         return {
           ...transaction,
           ...transaction.sentTransaction,
+          type: transaction.type,
         }
       }
 
@@ -154,6 +164,7 @@ async function Transactions() {
               </li>
             )}
 
+            {/* TODO update icon & wording */}
             {transaction.type === 'INIT' && (
               <li className="flex items-center justify-between rounded-xl bg-gray-100 px-3 py-2">
                 <div className="flex items-center gap-4">
