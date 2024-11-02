@@ -1,6 +1,6 @@
 SELECT
   bu."jarId",
-  COALESCE((sum(bu.amount)) :: integer, 0) AS balance
+  (sum(bu.amount)) :: integer AS balance
 FROM
   "JarBalanceUpdate" bu
 GROUP BY
