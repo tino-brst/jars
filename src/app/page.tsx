@@ -26,6 +26,7 @@ async function Home() {
               <option value={Currency.EUR}>EUR</option>
             </Select>
           </div>
+          <Input type="number" name="initialBalance" step="0.01" min="0" />
         </div>
 
         <AddJarSubmitButton />

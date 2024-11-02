@@ -9,6 +9,12 @@ import { Currency } from '@prisma/client'
 const schema = z.object({
   name: z.string(),
   currency: z.nativeEnum(Currency),
+  initialBalance: z.coerce
+    .number()
+    .nonnegative()
+    .step(0.01)
+    .transform((value) => value * 100)
+    .optional(),
 })
 
 async function createJar(formData: FormData) {
@@ -18,7 +24,23 @@ async function createJar(formData: FormData) {
     throw parse.error.issues
   }
 
-  await db.jar.create({ data: parse.data })
+  const { initialBalance, ...data } = parse.data
+
+  await db.jar.create({
+    data: {
+      ...data,
+      initTransaction: {
+        create: {
+          amount: initialBalance,
+          transaction: {
+            create: {
+              type: 'INIT',
+            },
+          },
+        },
+      },
+    },
+  })
 
   // TODO the revalidate should be specific to jars, not all of the things
   revalidatePath('/', 'layout')

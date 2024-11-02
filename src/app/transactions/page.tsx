@@ -7,10 +7,10 @@ import { db } from '@/lib/db'
 import {
   Transaction as BaseTransaction,
   TransactionType,
-  SentTransaction,
-  ReceivedTransaction,
-  Jar,
   InitTransaction,
+  ReceivedTransaction,
+  SentTransaction,
+  Jar,
 } from '@prisma/client'
 import React, { Fragment } from 'react'
 
@@ -34,6 +34,11 @@ async function Transactions() {
   const transactions = (
     await db.transaction.findMany({
       include: {
+        initTransaction: {
+          include: {
+            jar: true,
+          },
+        },
         sentTransaction: {
           include: {
             jar: true,
@@ -51,6 +56,8 @@ async function Transactions() {
     })
   )
     .map<Transaction | null>((transaction) => {
+      // TODO support INIT transactions
+
       if (transaction.type === 'RECEIVED' && transaction.receivedTransaction) {
         return {
           ...transaction,
@@ -132,6 +139,28 @@ async function Transactions() {
                     <ArrowDownIcon size={24} />
                   </div>
                   <p className="font-medium">{transaction.counterparty}</p>
+                </div>
+                <div className="flex flex-col items-end">
+                  <p className="text-lg font-medium">
+                    {transaction.amount / 100}{' '}
+                    <span className="text-base text-gray-500">
+                      {transaction.jar.currency}
+                    </span>
+                  </p>
+                  <p className="text-sm font-medium text-gray-400">
+                    added to {transaction.jar.name}
+                  </p>
+                </div>
+              </li>
+            )}
+
+            {transaction.type === 'INIT' && (
+              <li className="flex items-center justify-between rounded-xl bg-gray-100 px-3 py-2">
+                <div className="flex items-center gap-4">
+                  <div className="flex w-fit items-center justify-center rounded-full bg-gray-200 p-1">
+                    <ArrowDownIcon size={24} />
+                  </div>
+                  <p className="font-medium">Initial Balance</p>
                 </div>
                 <div className="flex flex-col items-end">
                   <p className="text-lg font-medium">
