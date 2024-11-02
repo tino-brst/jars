@@ -6,12 +6,9 @@ import { AddJarSubmitButton } from '@/components/AddJarSubmitButton'
 import { Currency } from '@prisma/client'
 
 async function Home() {
-  const jars = await db.jar.findMany({
+  const jars = await db.jarWithBalance.findMany({
     orderBy: {
       createdAt: 'desc',
-    },
-    include: {
-      JarBalance: true,
     },
   })
 
@@ -42,9 +39,7 @@ async function Home() {
           >
             <p className="truncate font-medium">{jar.name}</p>
             <div className="flex items-baseline gap-1">
-              <p className="text-2xl font-medium">
-                {jar.JarBalance?.balance ?? 0 / 100}
-              </p>
+              <p className="text-2xl font-medium">{jar.balance / 100}</p>
               <p className="text-gray-400">{jar.currency}</p>
             </div>
           </li>

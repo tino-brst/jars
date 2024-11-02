@@ -85,3 +85,12 @@ view JarBalance {
   jarId   String @id @unique @db.Uuid
   balance Int
 }
+
+view JarWithBalance {
+  id        String   @id @unique @db.Uuid
+  name      String
+  currency  Currency
+  createdAt DateTime
+  updatedAt DateTime
+  balance   Int
+}
