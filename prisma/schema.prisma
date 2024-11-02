@@ -9,17 +9,16 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-// TODO rename SentTransaction, ReceivedTransaction, etc (sentTransaction, receivedTransaction)
 model Jar {
   id                  String                @id @default(uuid()) @db.Uuid
   name                String
   currency            Currency
   createdAt           DateTime              @default(now())
   updatedAt           DateTime              @updatedAt
-  SentTransaction     SentTransaction[]
-  ReceivedTransaction ReceivedTransaction[]
-  MoveFromTransaction MoveTransaction[]     @relation("MoveFromTransaction")
-  MoveToTransaction   MoveTransaction[]     @relation("MoveToTransaction")
+  sentTransaction     SentTransaction[]
+  receivedTransaction ReceivedTransaction[]
+  moveFromTransaction MoveTransaction[]     @relation("moveFromTransaction")
+  moveToTransaction   MoveTransaction[]     @relation("moveToTransaction")
 }
 
 enum Currency {
@@ -65,10 +64,10 @@ model MoveTransaction {
   transactionId String      @id @unique @db.Uuid
   transaction   Transaction @relation(fields: [transactionId], references: [id]) // TODO cascade delete & update
   fromJarId     String      @db.Uuid
-  fromJar       Jar         @relation("MoveFromTransaction", fields: [fromJarId], references: [id])
+  fromJar       Jar         @relation("moveFromTransaction", fields: [fromJarId], references: [id])
   fromAmount    Int         @default(0) // TODO add db level checks for negative values
   toJarId       String      @db.Uuid
-  toJar         Jar         @relation("MoveToTransaction", fields: [toJarId], references: [id])
+  toJar         Jar         @relation("moveToTransaction", fields: [toJarId], references: [id])
   toAmount      Int         @default(0) // TODO add db level checks for positive values
   // TODO add conversion rate and diff fields to account for fees
 }
