@@ -15,6 +15,7 @@ model Jar {
   currency            Currency
   createdAt           DateTime              @default(now())
   updatedAt           DateTime              @updatedAt
+  initTransaction     InitTransaction?
   sentTransaction     SentTransaction[]
   receivedTransaction ReceivedTransaction[]
   moveFromTransaction MoveTransaction[]     @relation("moveFromTransaction")
@@ -32,14 +33,25 @@ model Transaction {
   type                TransactionType
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
+  initTransaction     InitTransaction?
   sentTransaction     SentTransaction?
   receivedTransaction ReceivedTransaction?
   moveTransaction     MoveTransaction?
 }
 
 enum TransactionType {
+  INIT
   SENT
   RECEIVED
+  // TODO add MOVE and handle in the UI
+}
+
+model InitTransaction {
+  transactionId String      @id @unique @db.Uuid
+  transaction   Transaction @relation(fields: [transactionId], references: [id]) // TODO cascade delete & update
+  jarId         String      @unique @db.Uuid
+  jar           Jar         @relation(fields: [jarId], references: [id])
+  amount        Int         @default(0) // TODO add db level checks for negative values
 }
 
 model SentTransaction {

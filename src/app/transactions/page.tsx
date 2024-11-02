@@ -10,15 +10,23 @@ import {
   SentTransaction,
   ReceivedTransaction,
   Jar,
+  InitTransaction,
 } from '@prisma/client'
 import React, { Fragment } from 'react'
 
-type Transaction = Omit<BaseTransaction, 'type'> & { jar: Jar } & (
+type Transaction = Omit<BaseTransaction, 'type'> &
+  (
+    | (Omit<InitTransaction, 'transactionId' | 'jarId'> & {
+        type: typeof TransactionType.INIT
+        jar: Jar
+      })
     | (Omit<ReceivedTransaction, 'transactionId' | 'jarId'> & {
         type: typeof TransactionType.RECEIVED
+        jar: Jar
       })
     | (Omit<SentTransaction, 'transactionId' | 'jarId'> & {
         type: typeof TransactionType.SENT
+        jar: Jar
       })
   )
 
