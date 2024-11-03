@@ -10,16 +10,16 @@ datasource db {
 }
 
 model Jar {
-  id                  String                @id @default(uuid()) @db.Uuid
-  name                String
-  currency            Currency
-  createdAt           DateTime              @default(now())
-  updatedAt           DateTime              @updatedAt
-  initTransaction     InitTransaction?
-  sentTransaction     SentTransaction[]
-  receivedTransaction ReceivedTransaction[]
-  moveFromTransaction MoveTransaction[]     @relation("moveFromTransaction")
-  moveToTransaction   MoveTransaction[]     @relation("moveToTransaction")
+  id                   String                @id @default(uuid()) @db.Uuid
+  name                 String
+  currency             Currency
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  initTransaction      InitTransaction?
+  sentTransaction      SentTransaction[]
+  receivedTransaction  ReceivedTransaction[]
+  movedFromTransaction MovedTransaction[]    @relation("movedFromTransaction")
+  movedToTransaction   MovedTransaction[]    @relation("movedToTransaction")
 }
 
 enum Currency {
@@ -36,14 +36,14 @@ model Transaction {
   initTransaction     InitTransaction?
   sentTransaction     SentTransaction?
   receivedTransaction ReceivedTransaction?
-  moveTransaction     MoveTransaction?
+  movedTransaction    MovedTransaction?
 }
 
 enum TransactionType {
   INIT
   SENT
   RECEIVED
-  // TODO add MOVE and handle in the UI
+  MOVED
 }
 
 model InitTransaction {
@@ -72,14 +72,14 @@ model ReceivedTransaction {
   counterparty  String
 }
 
-model MoveTransaction {
+model MovedTransaction {
   transactionId String      @id @unique @db.Uuid
   transaction   Transaction @relation(fields: [transactionId], references: [id]) // TODO cascade delete & update
   fromJarId     String      @db.Uuid
-  fromJar       Jar         @relation("moveFromTransaction", fields: [fromJarId], references: [id])
+  fromJar       Jar         @relation("movedFromTransaction", fields: [fromJarId], references: [id])
   fromAmount    Int         @default(0) // TODO add db level checks for negative values
   toJarId       String      @db.Uuid
-  toJar         Jar         @relation("moveToTransaction", fields: [toJarId], references: [id])
+  toJar         Jar         @relation("movedToTransaction", fields: [toJarId], references: [id])
   toAmount      Int         @default(0) // TODO add db level checks for positive values
   // TODO add conversion rate and diff fields to account for fees
 }
@@ -90,11 +90,14 @@ view JarBalanceUpdate {
   amount        Int
 
   @@unique([transactionId, jarId])
+  @@ignore
 }
 
 view JarBalance {
   jarId   String @id @unique @db.Uuid
   balance Int
+
+  @@ignore
 }
 
 view JarWithBalance {
@@ -104,4 +107,6 @@ view JarWithBalance {
   createdAt DateTime
   updatedAt DateTime
   balance   Int
+
+  @@ignore
 }
