@@ -95,8 +95,6 @@ view JarBalanceUpdate {
 view JarBalance {
   jarId   String @id @unique @db.Uuid
   balance Int
-
-  @@ignore
 }
 
 view JarWithBalance {
