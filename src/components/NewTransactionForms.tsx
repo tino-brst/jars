@@ -13,7 +13,6 @@ import { Input } from '@/components/primitives/Input'
 import { Select } from '@/components/primitives/Select'
 import { JarWithBalance, TransactionType } from '@prisma/client'
 
-// TODO move amount inputs to the top
 // TODO try <hr />s
 // TODO clear inputs after submit
 // TODO all transaction inputs have to be > 0 (min="0" is inclusive of zero)
@@ -66,6 +65,16 @@ function SentTransactionForm({ jars }: { jars: Array<JarWithBalance> }) {
 
   return (
     <form className="flex flex-col gap-2" action={createSentTransaction}>
+      <Input
+        required
+        type="number"
+        name="amount"
+        step="0.01"
+        min="0"
+        max={(jar?.balance ?? 0) / 100}
+        className="flex-1"
+      />
+
       <div className="flex items-center gap-2">
         <Input
           required
@@ -99,16 +108,6 @@ function SentTransactionForm({ jars }: { jars: Array<JarWithBalance> }) {
         </Select>
       </div>
 
-      <Input
-        required
-        type="number"
-        name="amount"
-        step="0.01"
-        min="0"
-        max={(jar?.balance ?? 0) / 100}
-        className="flex-1"
-      />
-
       <AddTransactionSubmitButton />
     </form>
   )
@@ -117,6 +116,15 @@ function SentTransactionForm({ jars }: { jars: Array<JarWithBalance> }) {
 function ReceivedTransactionForm({ jars }: { jars: Array<JarWithBalance> }) {
   return (
     <form className="flex flex-col gap-2" action={createReceivedTransaction}>
+      <Input
+        required
+        type="number"
+        name="amount"
+        step="0.01"
+        min="0"
+        className="flex-1"
+      />
+
       <div className="flex items-center gap-2">
         <Input
           required
@@ -134,15 +142,6 @@ function ReceivedTransactionForm({ jars }: { jars: Array<JarWithBalance> }) {
           ))}
         </Select>
       </div>
-
-      <Input
-        required
-        type="number"
-        name="amount"
-        step="0.01"
-        min="0"
-        className="flex-1"
-      />
 
       <AddTransactionSubmitButton />
     </form>
