@@ -1,6 +1,6 @@
 import { createReceivedTransaction } from '@/actions/transactions'
 import { AddTransactionSubmitButton } from '@/components/AddTransactionSubmitButton'
-import { ArrowDownIcon } from '@/components/icons/ArrowDownIcon'
+import { ArrowDownLeftIcon } from '@/components/icons/ArrowDownLeftIcon'
 import { CoinsStacked03Icon } from '@/components/icons/CoinsStacked03Icon'
 import { Input } from '@/components/primitives/Input'
 import { Select } from '@/components/primitives/Select'
@@ -147,7 +147,7 @@ async function Transactions() {
               <li className="flex items-center justify-between rounded-xl bg-gray-100 px-3 py-2">
                 <div className="flex items-center gap-4">
                   <div className="flex w-fit items-center justify-center rounded-full bg-gray-200 p-2">
-                    <ArrowDownIcon size={24} />
+                    <ArrowDownLeftIcon size={24} />
                   </div>
                   <p className="font-medium">{transaction.counterparty}</p>
                 </div>
