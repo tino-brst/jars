@@ -67,6 +67,18 @@ const movedTransactionFormDataSchema = z.object({
     .nonnegative()
     .step(0.01)
     .transform((value) => value * 100),
+  fee: z.coerce
+    .number()
+    .nonnegative()
+    .step(0.01)
+    .transform((value) => value * 100),
+  // Coercion of an empty string to a number (Number('')) returns 0, which is
+  // not what we want in the case of the conversionRate, which should default to
+  // 1 if not provided
+  conversionRate: z.preprocess(
+    (value) => (value ? Number(value) : undefined),
+    z.number().nonnegative().default(1),
+  ),
 })
 
 async function createMovedTransaction(formData: FormData) {
@@ -76,6 +88,14 @@ async function createMovedTransaction(formData: FormData) {
 
   if (!parse.success) {
     throw parse.error.issues
+  }
+
+  const { fromAmount, toAmount, fee, conversionRate } = parse.data
+  const fromAmountAfterFeesAndConversion = (fromAmount - fee) * conversionRate
+  const isValidTransaction = fromAmountAfterFeesAndConversion === toAmount
+
+  if (!isValidTransaction) {
+    throw `Invalid transaction (${fromAmountAfterFeesAndConversion / 100} ≠ ${toAmount / 100})`
   }
 
   await db.transaction.create({

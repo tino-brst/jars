@@ -27,6 +27,7 @@ function NewTransactionForms({ jars }: { jars: Array<JarWithBalance> }) {
       >
         <option value={TransactionType.SENT}>Sent</option>
         <option value={TransactionType.RECEIVED}>Received</option>
+        {/* TODO disable/remove if only one jar available */}
         <option value={TransactionType.MOVED}>Moved</option>
       </Select>
 
@@ -89,8 +90,11 @@ function SentOrReceivedTransactionForm({
 }
 
 function MovedTransactionForm({ jars }: { jars: Array<JarWithBalance> }) {
-  const [fromJarId, setFromJarId] = useState<string>(jars[0].id)
+  const [fromJarId, setFromJarId] = useState<string>(jars[0].id ?? '')
+  const [toJarId, setToJarId] = useState<string>(jars[1].id ?? '')
+
   const fromJar = jars.find((jar) => jar.id === fromJarId)
+  const toJar = jars.find((jar) => jar.id === toJarId)
 
   return (
     <form className="flex flex-col gap-2" action={createMovedTransaction}>
@@ -111,6 +115,7 @@ function MovedTransactionForm({ jars }: { jars: Array<JarWithBalance> }) {
           value={fromJarId}
           onChange={(event) => setFromJarId(event.target.value)}
         >
+          {/* TODO split options in non-empty & empty jars, with the empty ones disabled */}
           {jars.map((jar) => (
             <option value={jar.id} key={jar.id}>
               {jar.name} ({jar.currency})
@@ -128,7 +133,12 @@ function MovedTransactionForm({ jars }: { jars: Array<JarWithBalance> }) {
           min="0"
           className="flex-1"
         />
-        <Select required name="toJarId">
+        <Select
+          required
+          name="toJarId"
+          value={toJarId}
+          onChange={(event) => setToJarId(event.target.value)}
+        >
           {jars.map((jar) => (
             <option value={jar.id} key={jar.id}>
               {jar.name} ({jar.currency})
@@ -136,6 +146,13 @@ function MovedTransactionForm({ jars }: { jars: Array<JarWithBalance> }) {
           ))}
         </Select>
       </div>
+
+      <Input type="number" name="fee" step="0.01" min="0" />
+
+      {/* The conversion rate is only relevant when moving money across jars with different currencies */}
+      {fromJar?.currency !== toJar?.currency && (
+        <Input type="number" name="conversionRate" step="any" min="0" />
+      )}
 
       <AddTransactionSubmitButton />
     </form>
