@@ -75,6 +75,7 @@ function SentOrReceivedTransactionForm({
           className="flex-1"
         />
         <p>{transactionType === 'SENT' ? 'from' : 'to'}</p>
+        {/* TODO split in empty & non-empty for SENT transactions */}
         <Select required name="jarId">
           {jars.map((jar) => (
             <option value={jar.id} key={jar.id}>
@@ -90,6 +91,7 @@ function SentOrReceivedTransactionForm({
         name="amount"
         step="0.01"
         min="0"
+        // TODO set a max if SENT transaction
         className="flex-1"
       />
 
@@ -121,7 +123,6 @@ function MovedTransactionForm({ jars }: { jars: Array<JarWithBalance> }) {
           required
           type="number"
           name="fromAmount"
-          placeholder={`fromAmount (${(fromJar?.balance ?? 0) / 100})`}
           step="0.01"
           min="0"
           max={(fromJar?.balance ?? 0) / 100}

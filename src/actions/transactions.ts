@@ -17,6 +17,7 @@ const sentOrReceivedTransactionFormDataSchema = z.object({
     .transform((value) => value * 100),
 })
 
+// TODO split in two
 async function createSentOrReceivedTransaction(formData: FormData) {
   const parse = sentOrReceivedTransactionFormDataSchema.safeParse(
     Object.fromEntries(formData),
