@@ -1,4 +1,5 @@
 import { ArrowDownLeftIcon } from '@/components/icons/ArrowDownLeftIcon'
+import { ArrowUpRightIcon } from '@/components/icons/ArrowUpRightIcon'
 import { CoinsStacked03Icon } from '@/components/icons/CoinsStacked03Icon'
 import { NewTransactionForms } from '@/components/NewTransactionForms'
 
@@ -100,6 +101,28 @@ async function Transactions() {
       <ol className="flex flex-col gap-2">
         {transactions.map((transaction) => (
           <Fragment key={transaction.id}>
+            {transaction.type === 'SENT' && (
+              <li className="flex items-center justify-between rounded-xl bg-gray-100 px-3 py-2">
+                <div className="flex items-center gap-4">
+                  <div className="flex w-fit items-center justify-center rounded-full bg-gray-200 p-2">
+                    <ArrowUpRightIcon size={24} />
+                  </div>
+                  <p className="font-medium">{transaction.counterparty}</p>
+                </div>
+                <div className="flex flex-col items-end">
+                  <p className="text-lg font-medium">
+                    {Math.abs(transaction.amount / 100)}{' '}
+                    <span className="text-base text-gray-500">
+                      {transaction.jar.currency}
+                    </span>
+                  </p>
+                  <p className="text-sm font-medium text-gray-400">
+                    sent from {transaction.jar.name}
+                  </p>
+                </div>
+              </li>
+            )}
+
             {transaction.type === 'RECEIVED' && (
               <li className="flex items-center justify-between rounded-xl bg-gray-100 px-3 py-2">
                 <div className="flex items-center gap-4">
