@@ -8,6 +8,7 @@ import { Currency } from '@prisma/client'
 async function Home() {
   const jars = await db.jarWithBalance.findMany({
     orderBy: {
+      // TODO sort balance desc
       createdAt: 'desc',
     },
   })

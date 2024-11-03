@@ -4,7 +4,8 @@ import { useState } from 'react'
 
 import {
   createMovedTransaction,
-  createSentOrReceivedTransaction,
+  createSentTransaction,
+  createReceivedTransaction,
 } from '@/actions/transactions'
 import { AddTransactionSubmitButton } from '@/components/AddTransactionSubmitButton'
 
@@ -40,11 +41,10 @@ function NewTransactionForms({ jars }: { jars: Array<JarWithBalance> }) {
         )}
       </Select>
 
-      {(transactionType === 'SENT' || transactionType === 'RECEIVED') && (
-        <SentOrReceivedTransactionForm
-          jars={jars}
-          transactionType={transactionType}
-        />
+      {transactionType === 'SENT' && <SentTransactionForm jars={jars} />}
+
+      {transactionType === 'RECEIVED' && (
+        <ReceivedTransactionForm jars={jars} />
       )}
 
       {transactionType === 'MOVED' && <MovedTransactionForm jars={jars} />}
@@ -52,29 +52,18 @@ function NewTransactionForms({ jars }: { jars: Array<JarWithBalance> }) {
   )
 }
 
-function SentOrReceivedTransactionForm({
-  jars,
-  transactionType,
-}: {
-  jars: Array<JarWithBalance>
-  transactionType: TransactionType
-}) {
+function SentTransactionForm({ jars }: { jars: Array<JarWithBalance> }) {
   return (
-    <form
-      className="flex flex-col gap-2"
-      action={createSentOrReceivedTransaction}
-    >
-      <input type="hidden" value={transactionType} name="type" />
-
+    <form className="flex flex-col gap-2" action={createSentTransaction}>
       <div className="flex items-center gap-2">
         <Input
           required
           type="text"
           name="counterparty"
-          placeholder={transactionType === 'SENT' ? 'to' : 'from'}
+          placeholder="to"
           className="flex-1"
         />
-        <p>{transactionType === 'SENT' ? 'from' : 'to'}</p>
+        <p>from</p>
         {/* TODO split in empty & non-empty for SENT transactions */}
         <Select required name="jarId">
           {jars.map((jar) => (
@@ -92,6 +81,41 @@ function SentOrReceivedTransactionForm({
         step="0.01"
         min="0"
         // TODO set a max if SENT transaction
+        className="flex-1"
+      />
+
+      <AddTransactionSubmitButton />
+    </form>
+  )
+}
+
+function ReceivedTransactionForm({ jars }: { jars: Array<JarWithBalance> }) {
+  return (
+    <form className="flex flex-col gap-2" action={createReceivedTransaction}>
+      <div className="flex items-center gap-2">
+        <Input
+          required
+          type="text"
+          name="counterparty"
+          placeholder="from"
+          className="flex-1"
+        />
+        <p>to</p>
+        <Select required name="jarId">
+          {jars.map((jar) => (
+            <option value={jar.id} key={jar.id}>
+              {jar.name} ({jar.currency})
+            </option>
+          ))}
+        </Select>
+      </div>
+
+      <Input
+        required
+        type="number"
+        name="amount"
+        step="0.01"
+        min="0"
         className="flex-1"
       />
 
