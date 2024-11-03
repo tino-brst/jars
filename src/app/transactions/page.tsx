@@ -1,6 +1,8 @@
 import { ArrowDownLeftIcon } from '@/components/icons/ArrowDownLeftIcon'
 import { ArrowUpRightIcon } from '@/components/icons/ArrowUpRightIcon'
 import { CoinsStacked03Icon } from '@/components/icons/CoinsStacked03Icon'
+import { SwitchHorizontal01Icon } from '@/components/icons/SwitchHorizontal01Icon'
+import { ChevronRightIcon } from '@/components/icons/ChevronRightIcon'
 import { NewTransactionForms } from '@/components/NewTransactionForms'
 
 import { db } from '@/lib/db'
@@ -11,6 +13,7 @@ import {
   ReceivedTransaction,
   SentTransaction,
   Jar,
+  MovedTransaction,
 } from '@prisma/client'
 import React, { Fragment } from 'react'
 
@@ -28,6 +31,10 @@ type Transaction = Omit<BaseTransaction, 'type'> &
         type: typeof TransactionType.RECEIVED
         jar: Jar
       })
+    | (Omit<MovedTransaction, 'transactionId' | 'forJarId' | 'toJarId'> & {
+        type: typeof TransactionType.MOVED
+        fromJar: Jar
+        toJar: Jar
       })
   )
 
@@ -48,6 +55,12 @@ async function Transactions() {
         receivedTransaction: {
           include: {
             jar: true,
+          },
+        },
+        movedTransaction: {
+          include: {
+            fromJar: true,
+            toJar: true,
           },
         },
       },
@@ -80,6 +93,16 @@ async function Transactions() {
           ...transaction,
           ...transaction.receivedTransaction,
           type: transaction.type,
+        }
+      }
+
+      if (transaction.type === 'MOVED' && transaction.movedTransaction) {
+        return {
+          ...transaction,
+          ...transaction.movedTransaction,
+          type: transaction.type,
+          fromJar: transaction.movedTransaction.fromJar,
+          toJar: transaction.movedTransaction.toJar,
         }
       }
 
@@ -163,6 +186,37 @@ async function Transactions() {
                   </p>
                   <p className="text-sm font-medium text-gray-400">
                     added to {transaction.jar.name}
+                  </p>
+                </div>
+              </li>
+            )}
+
+            {transaction.type === 'MOVED' && (
+              <li className="flex items-center justify-between rounded-xl bg-gray-100 px-3 py-2">
+                <div className="flex items-center gap-4">
+                  <div className="flex w-fit items-center justify-center rounded-full bg-gray-200 p-2">
+                    <SwitchHorizontal01Icon size={24} />
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <p className="font-medium">{transaction.fromJar.name}</p>
+                    <ChevronRightIcon
+                      size={12}
+                      strokeWidth={4}
+                      className="text-gray-400"
+                    />
+                    <p className="font-medium">{transaction.toJar.name}</p>
+                  </div>
+                </div>
+                <div className="flex flex-col items-end">
+                  <p className="text-lg font-medium">
+                    {Math.abs(transaction.fromAmount / 100)}{' '}
+                    <span className="text-base text-gray-500">
+                      {transaction.fromJar.currency}
+                    </span>
+                  </p>
+                  <p className="text-sm font-medium text-gray-400">
+                    {Math.abs(transaction.toAmount / 100)}{' '}
+                    {transaction.toJar.currency}
                   </p>
                 </div>
               </li>

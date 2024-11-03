@@ -2,7 +2,10 @@
 
 import { useState } from 'react'
 
-import { createSentOrReceivedTransaction } from '@/actions/transactions'
+import {
+  createMovedTransaction,
+  createSentOrReceivedTransaction,
+} from '@/actions/transactions'
 import { AddTransactionSubmitButton } from '@/components/AddTransactionSubmitButton'
 
 import { Input } from '@/components/primitives/Input'
@@ -24,6 +27,7 @@ function NewTransactionForms({ jars }: { jars: Array<Jar> }) {
       >
         <option value={TransactionType.SENT}>Sent</option>
         <option value={TransactionType.RECEIVED}>Received</option>
+        <option value={TransactionType.MOVED}>Moved</option>
       </Select>
 
       {(transactionType === 'SENT' || transactionType === 'RECEIVED') && (
@@ -59,6 +63,48 @@ function NewTransactionForms({ jars }: { jars: Array<Jar> }) {
             min="0"
             className="flex-1"
           />
+
+          <AddTransactionSubmitButton />
+        </form>
+      )}
+
+      {transactionType === 'MOVED' && (
+        <form className="flex flex-col gap-2" action={createMovedTransaction}>
+          <div className="flex items-center gap-2">
+            <Input
+              required
+              type="number"
+              name="fromAmount"
+              step="0.01"
+              min="0"
+              className="flex-1"
+            />
+            <Select required name="fromJarId" className="flex-1">
+              {jars.map((jar) => (
+                <option value={jar.id} key={jar.id}>
+                  {jar.name} ({jar.currency})
+                </option>
+              ))}
+            </Select>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Input
+              required
+              type="number"
+              name="toAmount"
+              step="0.01"
+              min="0"
+              className="flex-1"
+            />
+            <Select required name="toJarId" className="flex-1">
+              {jars.map((jar) => (
+                <option value={jar.id} key={jar.id}>
+                  {jar.name} ({jar.currency})
+                </option>
+              ))}
+            </Select>
+          </div>
 
           <AddTransactionSubmitButton />
         </form>
