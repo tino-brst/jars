@@ -13,7 +13,6 @@ import { Input } from '@/components/primitives/Input'
 import { Select } from '@/components/primitives/Select'
 import { JarWithBalance, TransactionType } from '@prisma/client'
 
-// TODO try <hr />s
 // TODO clear inputs after submit
 // TODO all transaction inputs have to be > 0 (min="0" is inclusive of zero)
 
@@ -37,11 +36,14 @@ function NewTransactionForms({ jars }: { jars: Array<JarWithBalance> }) {
         {hasMultipleJars ? (
           <option value={TransactionType.MOVED}>Moved</option>
         ) : (
-          <optgroup label="Needs at least two jars">
-            <option value={TransactionType.MOVED} disabled>
-              Moved
-            </option>
-          </optgroup>
+          <>
+            <hr />
+            <optgroup label="Needs at least two jars">
+              <option value={TransactionType.MOVED} disabled>
+                Moved
+              </option>
+            </optgroup>
+          </>
         )}
       </Select>
 
@@ -97,13 +99,16 @@ function SentTransactionForm({ jars }: { jars: Array<JarWithBalance> }) {
           ))}
 
           {!!emptyJars.length && (
-            <optgroup label="Empty jars">
-              {emptyJars.map((jar) => (
-                <option value={jar.id} key={jar.id} disabled>
-                  {jar.name} ({jar.currency})
-                </option>
-              ))}
-            </optgroup>
+            <>
+              <hr />
+              <optgroup label="Empty jars">
+                {emptyJars.map((jar) => (
+                  <option value={jar.id} key={jar.id} disabled>
+                    {jar.name} ({jar.currency})
+                  </option>
+                ))}
+              </optgroup>
+            </>
           )}
         </Select>
       </div>
@@ -199,21 +204,27 @@ function MovedTransactionForm({ jars }: { jars: Array<JarWithBalance> }) {
           ))}
 
           {!isToJarEmpty && (
-            <optgroup label="Swap">
-              <option value={toJar.id} key={toJar.id}>
-                {toJar.name} ({toJar.currency})
-              </option>
-            </optgroup>
+            <>
+              <hr />
+              <optgroup label="Swap">
+                <option value={toJar.id} key={toJar.id}>
+                  {toJar.name} ({toJar.currency})
+                </option>
+              </optgroup>
+            </>
           )}
 
           {!!emptyJars.length && (
-            <optgroup label="Empty jars">
-              {emptyJars.map((jar) => (
-                <option value={jar.id} key={jar.id} disabled>
-                  {jar.name} ({jar.currency})
-                </option>
-              ))}
-            </optgroup>
+            <>
+              <hr />
+              <optgroup label="Empty jars">
+                {emptyJars.map((jar) => (
+                  <option value={jar.id} key={jar.id} disabled>
+                    {jar.name} ({jar.currency})
+                  </option>
+                ))}
+              </optgroup>
+            </>
           )}
         </Select>
       </div>
@@ -249,17 +260,20 @@ function MovedTransactionForm({ jars }: { jars: Array<JarWithBalance> }) {
             </option>
           ))}
           {!!fromJar && (
-            <optgroup label="Swap">
-              <option
-                value={fromJar.id}
-                key={fromJar.id}
-                // Swapping jars should only be possible if the current toJar
-                // has a non-empty balance
-                disabled={isToJarEmpty}
-              >
-                {fromJar.name} ({fromJar.currency})
-              </option>
-            </optgroup>
+            <>
+              <hr />
+              <optgroup label="Swap">
+                <option
+                  value={fromJar.id}
+                  key={fromJar.id}
+                  // Swapping jars should only be possible if the current toJar
+                  // has a non-empty balance
+                  disabled={isToJarEmpty}
+                >
+                  {fromJar.name} ({fromJar.currency})
+                </option>
+              </optgroup>
+            </>
           )}
         </Select>
       </div>
