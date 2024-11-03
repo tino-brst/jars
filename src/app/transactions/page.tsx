@@ -5,9 +5,6 @@ import { SwitchHorizontal01Icon } from '@/components/icons/SwitchHorizontal01Ico
 import { ChevronRightIcon } from '@/components/icons/ChevronRightIcon'
 import { NewTransactionForms } from '@/components/NewTransactionForms'
 
-// TODO display anything that represents an increase in your total balance in
-// green (moving is not an increase)
-
 import { db } from '@/lib/db'
 import {
   Transaction as BaseTransaction,
@@ -19,6 +16,8 @@ import {
   MovedTransaction,
 } from '@prisma/client'
 import React, { Fragment } from 'react'
+import { twMerge } from 'tailwind-merge'
+import { PlusIcon } from '@/components/icons/PlusIcon'
 
 type Transaction = Omit<BaseTransaction, 'type'> &
   (
@@ -137,12 +136,21 @@ async function Transactions() {
                   <p className="font-medium">{transaction.jar.name}</p>
                 </div>
                 <div className="flex flex-col items-end">
-                  <p className="text-lg font-medium">
-                    {transaction.amount / 100}{' '}
-                    <span className="text-base text-gray-500">
-                      {transaction.jar.currency}
-                    </span>
-                  </p>
+                  <div className="flex items-baseline gap-1">
+                    {!!transaction.amount && (
+                      <PlusIcon
+                        size={12}
+                        strokeWidth={4}
+                        className="text-gray-400"
+                      />
+                    )}
+                    <p className="text-lg font-medium">
+                      {transaction.amount / 100}{' '}
+                      <span className="text-base text-gray-500">
+                        {transaction.jar.currency}
+                      </span>
+                    </p>
+                  </div>
                   <p className="text-sm font-medium text-gray-400">
                     Initial Balance
                   </p>
@@ -181,12 +189,19 @@ async function Transactions() {
                   <p className="font-medium">{transaction.counterparty}</p>
                 </div>
                 <div className="flex flex-col items-end">
-                  <p className="text-lg font-medium">
-                    {transaction.amount / 100}{' '}
-                    <span className="text-base text-gray-500">
-                      {transaction.jar.currency}
-                    </span>
-                  </p>
+                  <div className="flex items-baseline gap-1">
+                    <PlusIcon
+                      size={12}
+                      strokeWidth={4}
+                      className="text-gray-400"
+                    />
+                    <p className={twMerge('text-lg font-medium')}>
+                      {transaction.amount / 100}{' '}
+                      <span className="text-base text-gray-500">
+                        {transaction.jar.currency}
+                      </span>
+                    </p>
+                  </div>
                   <p className="text-sm font-medium text-gray-400">
                     Added to {transaction.jar.name}
                   </p>
