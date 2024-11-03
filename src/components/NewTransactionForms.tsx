@@ -10,12 +10,14 @@ import { AddTransactionSubmitButton } from '@/components/AddTransactionSubmitBut
 
 import { Input } from '@/components/primitives/Input'
 import { Select } from '@/components/primitives/Select'
-import { Jar, TransactionType } from '@prisma/client'
+import { JarWithBalance, TransactionType } from '@prisma/client'
 
-function NewTransactionForms({ jars }: { jars: Array<Jar> }) {
+function NewTransactionForms({ jars }: { jars: Array<JarWithBalance> }) {
   const [transactionType, setTransactionType] = useState<TransactionType>(
     TransactionType.SENT,
   )
+  const [fromJarId, setFromJarId] = useState<string>(jars[0].id)
+  const fromJar = jars.find((jar) => jar.id === fromJarId)
 
   return (
     <div className="mb-6 flex flex-col gap-2">
@@ -75,11 +77,18 @@ function NewTransactionForms({ jars }: { jars: Array<Jar> }) {
               required
               type="number"
               name="fromAmount"
+              placeholder={`fromAmount (${(fromJar?.balance ?? 0) / 100})`}
               step="0.01"
               min="0"
+              max={(fromJar?.balance ?? 0) / 100}
               className="flex-1"
             />
-            <Select required name="fromJarId" className="flex-1">
+            <Select
+              required
+              name="fromJarId"
+              value={fromJarId}
+              onChange={(event) => setFromJarId(event.target.value)}
+            >
               {jars.map((jar) => (
                 <option value={jar.id} key={jar.id}>
                   {jar.name} ({jar.currency})
@@ -97,7 +106,7 @@ function NewTransactionForms({ jars }: { jars: Array<Jar> }) {
               min="0"
               className="flex-1"
             />
-            <Select required name="toJarId" className="flex-1">
+            <Select required name="toJarId">
               {jars.map((jar) => (
                 <option value={jar.id} key={jar.id}>
                   {jar.name} ({jar.currency})

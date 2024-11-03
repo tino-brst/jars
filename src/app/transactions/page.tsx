@@ -5,6 +5,9 @@ import { SwitchHorizontal01Icon } from '@/components/icons/SwitchHorizontal01Ico
 import { ChevronRightIcon } from '@/components/icons/ChevronRightIcon'
 import { NewTransactionForms } from '@/components/NewTransactionForms'
 
+// TODO display anything that represents an increase in your total balance in
+// green (moving is not an increase)
+
 import { db } from '@/lib/db'
 import {
   Transaction as BaseTransaction,
@@ -110,7 +113,7 @@ async function Transactions() {
     })
     .filter((transaction): transaction is Transaction => transaction !== null)
 
-  const jars = await db.jar.findMany({
+  const jars = await db.jarWithBalance.findMany({
     orderBy: {
       createdAt: 'desc',
     },
