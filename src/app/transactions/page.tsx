@@ -161,7 +161,7 @@ async function Transactions() {
                     </span>
                   </p>
                   <p className="text-sm font-medium text-gray-400">
-                    of starting balance
+                    of initial balance
                   </p>
                 </div>
               </li>
