@@ -20,13 +20,14 @@ type Transaction = Omit<BaseTransaction, 'type'> &
         type: typeof TransactionType.INIT
         jar: Jar
       })
+    | (Omit<SentTransaction, 'transactionId' | 'jarId'> & {
+        type: typeof TransactionType.SENT
+        jar: Jar
+      })
     | (Omit<ReceivedTransaction, 'transactionId' | 'jarId'> & {
         type: typeof TransactionType.RECEIVED
         jar: Jar
       })
-    | (Omit<SentTransaction, 'transactionId' | 'jarId'> & {
-        type: typeof TransactionType.SENT
-        jar: Jar
       })
   )
 
@@ -66,18 +67,18 @@ async function Transactions() {
         }
       }
 
-      if (transaction.type === 'RECEIVED' && transaction.receivedTransaction) {
-        return {
-          ...transaction,
-          ...transaction.receivedTransaction,
-          type: transaction.type,
-        }
-      }
-
       if (transaction.type === 'SENT' && transaction.sentTransaction) {
         return {
           ...transaction,
           ...transaction.sentTransaction,
+          type: transaction.type,
+        }
+      }
+
+      if (transaction.type === 'RECEIVED' && transaction.receivedTransaction) {
+        return {
+          ...transaction,
+          ...transaction.receivedTransaction,
           type: transaction.type,
         }
       }
@@ -101,6 +102,28 @@ async function Transactions() {
       <ol className="flex flex-col gap-2">
         {transactions.map((transaction) => (
           <Fragment key={transaction.id}>
+            {transaction.type === 'INIT' && (
+              <li className="flex items-center justify-between rounded-xl bg-gray-100 px-3 py-2">
+                <div className="flex items-center gap-4">
+                  <div className="flex w-fit items-center justify-center rounded-full bg-gray-200 p-2">
+                    <CoinsStacked03Icon size={24} />
+                  </div>
+                  <p className="font-medium">{transaction.jar.name}</p>
+                </div>
+                <div className="flex flex-col items-end">
+                  <p className="text-lg font-medium">
+                    {transaction.amount / 100}{' '}
+                    <span className="text-base text-gray-500">
+                      {transaction.jar.currency}
+                    </span>
+                  </p>
+                  <p className="text-sm font-medium text-gray-400">
+                    of initial balance
+                  </p>
+                </div>
+              </li>
+            )}
+
             {transaction.type === 'SENT' && (
               <li className="flex items-center justify-between rounded-xl bg-gray-100 px-3 py-2">
                 <div className="flex items-center gap-4">
@@ -140,28 +163,6 @@ async function Transactions() {
                   </p>
                   <p className="text-sm font-medium text-gray-400">
                     added to {transaction.jar.name}
-                  </p>
-                </div>
-              </li>
-            )}
-
-            {transaction.type === 'INIT' && (
-              <li className="flex items-center justify-between rounded-xl bg-gray-100 px-3 py-2">
-                <div className="flex items-center gap-4">
-                  <div className="flex w-fit items-center justify-center rounded-full bg-gray-200 p-2">
-                    <CoinsStacked03Icon size={24} />
-                  </div>
-                  <p className="font-medium">{transaction.jar.name}</p>
-                </div>
-                <div className="flex flex-col items-end">
-                  <p className="text-lg font-medium">
-                    {transaction.amount / 100}{' '}
-                    <span className="text-base text-gray-500">
-                      {transaction.jar.currency}
-                    </span>
-                  </p>
-                  <p className="text-sm font-medium text-gray-400">
-                    of initial balance
                   </p>
                 </div>
               </li>
