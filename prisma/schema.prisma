@@ -104,6 +104,4 @@ view JarWithBalance {
   createdAt DateTime
   updatedAt DateTime
   balance   Int
-
-  @@ignore
 }
