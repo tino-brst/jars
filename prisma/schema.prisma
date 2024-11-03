@@ -90,7 +90,6 @@ view JarBalanceUpdate {
   amount        Int
 
   @@unique([transactionId, jarId])
-  @@ignore
 }
 
 view JarBalance {
