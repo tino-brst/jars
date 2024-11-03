@@ -144,7 +144,7 @@ async function Transactions() {
                     </span>
                   </p>
                   <p className="text-sm font-medium text-gray-400">
-                    of initial balance
+                    Initial Balance
                   </p>
                 </div>
               </li>
@@ -166,7 +166,7 @@ async function Transactions() {
                     </span>
                   </p>
                   <p className="text-sm font-medium text-gray-400">
-                    sent from {transaction.jar.name}
+                    Sent from {transaction.jar.name}
                   </p>
                 </div>
               </li>
@@ -188,7 +188,7 @@ async function Transactions() {
                     </span>
                   </p>
                   <p className="text-sm font-medium text-gray-400">
-                    added to {transaction.jar.name}
+                    Added to {transaction.jar.name}
                   </p>
                 </div>
               </li>
