@@ -16,8 +16,6 @@ function NewTransactionForms({ jars }: { jars: Array<JarWithBalance> }) {
   const [transactionType, setTransactionType] = useState<TransactionType>(
     TransactionType.SENT,
   )
-  const [fromJarId, setFromJarId] = useState<string>(jars[0].id)
-  const fromJar = jars.find((jar) => jar.id === fromJarId)
 
   return (
     <div className="mb-6 flex flex-col gap-2">
@@ -33,92 +31,114 @@ function NewTransactionForms({ jars }: { jars: Array<JarWithBalance> }) {
       </Select>
 
       {(transactionType === 'SENT' || transactionType === 'RECEIVED') && (
-        <form
-          className="flex flex-col gap-2"
-          action={createSentOrReceivedTransaction}
-        >
-          <input type="hidden" value={transactionType} name="type" />
-
-          <div className="flex items-center gap-2">
-            <Input
-              required
-              type="text"
-              name="counterparty"
-              placeholder={transactionType === 'SENT' ? 'to' : 'from'}
-              className="flex-1"
-            />
-            <p>{transactionType === 'SENT' ? 'from' : 'to'}</p>
-            <Select required name="jarId">
-              {jars.map((jar) => (
-                <option value={jar.id} key={jar.id}>
-                  {jar.name} ({jar.currency})
-                </option>
-              ))}
-            </Select>
-          </div>
-
-          <Input
-            required
-            type="number"
-            name="amount"
-            step="0.01"
-            min="0"
-            className="flex-1"
-          />
-
-          <AddTransactionSubmitButton />
-        </form>
+        <SentOrReceivedTransactionForm
+          jars={jars}
+          transactionType={transactionType}
+        />
       )}
 
-      {transactionType === 'MOVED' && (
-        <form className="flex flex-col gap-2" action={createMovedTransaction}>
-          <div className="flex items-center gap-2">
-            <Input
-              required
-              type="number"
-              name="fromAmount"
-              placeholder={`fromAmount (${(fromJar?.balance ?? 0) / 100})`}
-              step="0.01"
-              min="0"
-              max={(fromJar?.balance ?? 0) / 100}
-              className="flex-1"
-            />
-            <Select
-              required
-              name="fromJarId"
-              value={fromJarId}
-              onChange={(event) => setFromJarId(event.target.value)}
-            >
-              {jars.map((jar) => (
-                <option value={jar.id} key={jar.id}>
-                  {jar.name} ({jar.currency})
-                </option>
-              ))}
-            </Select>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Input
-              required
-              type="number"
-              name="toAmount"
-              step="0.01"
-              min="0"
-              className="flex-1"
-            />
-            <Select required name="toJarId">
-              {jars.map((jar) => (
-                <option value={jar.id} key={jar.id}>
-                  {jar.name} ({jar.currency})
-                </option>
-              ))}
-            </Select>
-          </div>
-
-          <AddTransactionSubmitButton />
-        </form>
-      )}
+      {transactionType === 'MOVED' && <MovedTransactionForm jars={jars} />}
     </div>
+  )
+}
+
+function SentOrReceivedTransactionForm({
+  jars,
+  transactionType,
+}: {
+  jars: Array<JarWithBalance>
+  transactionType: TransactionType
+}) {
+  return (
+    <form
+      className="flex flex-col gap-2"
+      action={createSentOrReceivedTransaction}
+    >
+      <input type="hidden" value={transactionType} name="type" />
+
+      <div className="flex items-center gap-2">
+        <Input
+          required
+          type="text"
+          name="counterparty"
+          placeholder={transactionType === 'SENT' ? 'to' : 'from'}
+          className="flex-1"
+        />
+        <p>{transactionType === 'SENT' ? 'from' : 'to'}</p>
+        <Select required name="jarId">
+          {jars.map((jar) => (
+            <option value={jar.id} key={jar.id}>
+              {jar.name} ({jar.currency})
+            </option>
+          ))}
+        </Select>
+      </div>
+
+      <Input
+        required
+        type="number"
+        name="amount"
+        step="0.01"
+        min="0"
+        className="flex-1"
+      />
+
+      <AddTransactionSubmitButton />
+    </form>
+  )
+}
+
+function MovedTransactionForm({ jars }: { jars: Array<JarWithBalance> }) {
+  const [fromJarId, setFromJarId] = useState<string>(jars[0].id)
+  const fromJar = jars.find((jar) => jar.id === fromJarId)
+
+  return (
+    <form className="flex flex-col gap-2" action={createMovedTransaction}>
+      <div className="flex items-center gap-2">
+        <Input
+          required
+          type="number"
+          name="fromAmount"
+          placeholder={`fromAmount (${(fromJar?.balance ?? 0) / 100})`}
+          step="0.01"
+          min="0"
+          max={(fromJar?.balance ?? 0) / 100}
+          className="flex-1"
+        />
+        <Select
+          required
+          name="fromJarId"
+          value={fromJarId}
+          onChange={(event) => setFromJarId(event.target.value)}
+        >
+          {jars.map((jar) => (
+            <option value={jar.id} key={jar.id}>
+              {jar.name} ({jar.currency})
+            </option>
+          ))}
+        </Select>
+      </div>
+
+      <div className="flex items-center gap-2">
+        <Input
+          required
+          type="number"
+          name="toAmount"
+          step="0.01"
+          min="0"
+          className="flex-1"
+        />
+        <Select required name="toJarId">
+          {jars.map((jar) => (
+            <option value={jar.id} key={jar.id}>
+              {jar.name} ({jar.currency})
+            </option>
+          ))}
+        </Select>
+      </div>
+
+      <AddTransactionSubmitButton />
+    </form>
   )
 }
 
