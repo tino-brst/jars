@@ -13,6 +13,11 @@ import { Input } from '@/components/primitives/Input'
 import { Select } from '@/components/primitives/Select'
 import { JarWithBalance, TransactionType } from '@prisma/client'
 
+// TODO move amount inputs to the top
+// TODO try <hr />s
+// TODO clear inputs after submit
+// TODO all transaction inputs have to be > 0 (min="0" is inclusive of zero)
+
 function NewTransactionForms({ jars }: { jars: Array<JarWithBalance> }) {
   const [transactionType, setTransactionType] = useState<TransactionType>(
     TransactionType.SENT,
@@ -53,6 +58,12 @@ function NewTransactionForms({ jars }: { jars: Array<JarWithBalance> }) {
 }
 
 function SentTransactionForm({ jars }: { jars: Array<JarWithBalance> }) {
+  const nonEmptyJars = jars.filter((jar) => jar.balance > 0)
+  const emptyJars = jars.filter((jar) => jar.balance === 0)
+
+  const [jarId, setJarId] = useState(nonEmptyJars[0].id ?? '')
+  const jar = jars.find((jar) => jar.id === jarId)
+
   return (
     <form className="flex flex-col gap-2" action={createSentTransaction}>
       <div className="flex items-center gap-2">
@@ -64,13 +75,27 @@ function SentTransactionForm({ jars }: { jars: Array<JarWithBalance> }) {
           className="flex-1"
         />
         <p>from</p>
-        {/* TODO split in empty & non-empty for SENT transactions */}
-        <Select required name="jarId">
-          {jars.map((jar) => (
+        <Select
+          required
+          name="jarId"
+          value={jarId}
+          onChange={(event) => setJarId(event.target.value)}
+        >
+          {nonEmptyJars.map((jar) => (
             <option value={jar.id} key={jar.id}>
               {jar.name} ({jar.currency})
             </option>
           ))}
+
+          {!!emptyJars.length && (
+            <optgroup label="Empty jars">
+              {emptyJars.map((jar) => (
+                <option value={jar.id} key={jar.id} disabled>
+                  {jar.name} ({jar.currency})
+                </option>
+              ))}
+            </optgroup>
+          )}
         </Select>
       </div>
 
@@ -80,7 +105,7 @@ function SentTransactionForm({ jars }: { jars: Array<JarWithBalance> }) {
         name="amount"
         step="0.01"
         min="0"
-        // TODO set a max if SENT transaction
+        max={(jar?.balance ?? 0) / 100}
         className="flex-1"
       />
 
