@@ -1,9 +1,7 @@
-import { createReceivedTransaction } from '@/actions/transactions'
-import { AddTransactionSubmitButton } from '@/components/AddTransactionSubmitButton'
 import { ArrowDownLeftIcon } from '@/components/icons/ArrowDownLeftIcon'
 import { CoinsStacked03Icon } from '@/components/icons/CoinsStacked03Icon'
-import { Input } from '@/components/primitives/Input'
-import { Select } from '@/components/primitives/Select'
+import { NewTransactionForms } from '@/components/NewTransactionForms'
+
 import { db } from '@/lib/db'
 import {
   Transaction as BaseTransaction,
@@ -97,48 +95,7 @@ async function Transactions() {
     <main>
       <h1 className="mb-4 text-3xl font-bold">Transactions</h1>
 
-      <div className="mb-6 flex flex-col gap-2">
-        <Select defaultValue={TransactionType.RECEIVED}>
-          <option value={TransactionType.RECEIVED}>Received</option>
-          <option value={TransactionType.SENT} disabled>
-            Sent
-          </option>
-        </Select>
-
-        <form
-          className="flex flex-col gap-2"
-          action={createReceivedTransaction}
-        >
-          <div className="flex items-center gap-2">
-            <Input
-              required
-              type="text"
-              name="counterparty"
-              placeholder="from"
-              className="flex-1"
-            />
-            <p>to</p>
-            <Select required name="jarId">
-              {jars.map((jar) => (
-                <option value={jar.id} key={jar.id}>
-                  {jar.name} ({jar.currency})
-                </option>
-              ))}
-            </Select>
-          </div>
-
-          <Input
-            required
-            type="number"
-            name="amount"
-            step="0.01"
-            min="0"
-            className="flex-1"
-          />
-
-          <AddTransactionSubmitButton />
-        </form>
-      </div>
+      <NewTransactionForms jars={jars} />
 
       <ol className="flex flex-col gap-2">
         {transactions.map((transaction) => (
