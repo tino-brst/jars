@@ -4,6 +4,7 @@ function ArrowUpRightIcon({
   size = 24,
   width = size,
   height = size,
+  strokeWidth = 2,
   ...props
 }: ComponentPropsWithRef<'svg'> & {
   size?: number
@@ -12,6 +13,7 @@ function ArrowUpRightIcon({
     <svg
       width={width}
       height={height}
+      strokeWidth={strokeWidth}
       viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -19,8 +21,7 @@ function ArrowUpRightIcon({
     >
       <path
         d="M7 17L17 7M17 7H7M17 7V17"
-        stroke="black"
-        strokeWidth="2"
+        stroke="currentColor"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
