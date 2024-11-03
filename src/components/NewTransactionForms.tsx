@@ -99,11 +99,20 @@ function SentOrReceivedTransactionForm({
 }
 
 function MovedTransactionForm({ jars }: { jars: Array<JarWithBalance> }) {
-  const [fromJarId, setFromJarId] = useState<string>(jars[0].id ?? '')
-  const [toJarId, setToJarId] = useState<string>(jars[1].id ?? '')
+  const nonEmptyJars = jars.filter((jar) => jar.balance > 0)
+  const emptyJars = jars.filter((jar) => jar.balance === 0)
 
+  const [fromJarId, setFromJarId] = useState<string>(nonEmptyJars[0].id ?? '')
   const fromJar = jars.find((jar) => jar.id === fromJarId)
+  const jarsWithoutFromJar = jars.filter((jar) => jar.id !== fromJarId)
+
+  const [toJarId, setToJarId] = useState<string>(jarsWithoutFromJar[0].id ?? '')
   const toJar = jars.find((jar) => jar.id === toJarId)
+  const nonEmptyJarsWithoutToJar = nonEmptyJars.filter(
+    (jar) => jar.id !== toJarId,
+  )
+
+  const isToJarEmpty = !toJar?.balance
 
   return (
     <form className="flex flex-col gap-2" action={createMovedTransaction}>
@@ -120,16 +129,43 @@ function MovedTransactionForm({ jars }: { jars: Array<JarWithBalance> }) {
         />
         <Select
           required
+          className="flex-1"
           name="fromJarId"
           value={fromJarId}
-          onChange={(event) => setFromJarId(event.target.value)}
+          onChange={(event) => {
+            const newFromJarId = event.target.value
+
+            // If picking the current toJar as the fromJar, do a swap
+            if (newFromJarId === toJarId) {
+              setToJarId(fromJarId)
+            }
+
+            setFromJarId(newFromJarId)
+          }}
         >
-          {/* TODO split options in non-empty & empty jars, with the empty ones disabled */}
-          {jars.map((jar) => (
+          {nonEmptyJarsWithoutToJar.map((jar) => (
             <option value={jar.id} key={jar.id}>
               {jar.name} ({jar.currency})
             </option>
           ))}
+
+          {!isToJarEmpty && (
+            <optgroup label="Swap">
+              <option value={toJar.id} key={toJar.id}>
+                {toJar.name} ({toJar.currency})
+              </option>
+            </optgroup>
+          )}
+
+          {!!emptyJars.length && (
+            <optgroup label="Empty jars">
+              {emptyJars.map((jar) => (
+                <option value={jar.id} key={jar.id} disabled>
+                  {jar.name} ({jar.currency})
+                </option>
+              ))}
+            </optgroup>
+          )}
         </Select>
       </div>
 
@@ -144,15 +180,38 @@ function MovedTransactionForm({ jars }: { jars: Array<JarWithBalance> }) {
         />
         <Select
           required
+          className="flex-1"
           name="toJarId"
           value={toJarId}
-          onChange={(event) => setToJarId(event.target.value)}
+          onChange={(event) => {
+            const newToJarId = event.target.value
+
+            // If picking the current fromJar as the toJar, do a swap
+            if (newToJarId === fromJarId) {
+              setFromJarId(toJarId)
+            }
+
+            setToJarId(newToJarId)
+          }}
         >
-          {jars.map((jar) => (
+          {jarsWithoutFromJar.map((jar) => (
             <option value={jar.id} key={jar.id}>
               {jar.name} ({jar.currency})
             </option>
           ))}
+          {!!fromJar && (
+            <optgroup label="Swap">
+              <option
+                value={fromJar.id}
+                key={fromJar.id}
+                // Swapping jars should only be possible if the current toJar
+                // has a non-empty balance
+                disabled={isToJarEmpty}
+              >
+                {fromJar.name} ({fromJar.currency})
+              </option>
+            </optgroup>
+          )}
         </Select>
       </div>
 
