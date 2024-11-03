@@ -1,6 +1,7 @@
 import { createReceivedTransaction } from '@/actions/transactions'
 import { AddTransactionSubmitButton } from '@/components/AddTransactionSubmitButton'
 import { ArrowDownIcon } from '@/components/icons/ArrowDownIcon'
+import { CoinsStacked03Icon } from '@/components/icons/CoinsStacked03Icon'
 import { Input } from '@/components/primitives/Input'
 import { Select } from '@/components/primitives/Select'
 import { db } from '@/lib/db'
@@ -145,7 +146,7 @@ async function Transactions() {
             {transaction.type === 'RECEIVED' && (
               <li className="flex items-center justify-between rounded-xl bg-gray-100 px-3 py-2">
                 <div className="flex items-center gap-4">
-                  <div className="flex w-fit items-center justify-center rounded-full bg-gray-200 p-1">
+                  <div className="flex w-fit items-center justify-center rounded-full bg-gray-200 p-2">
                     <ArrowDownIcon size={24} />
                   </div>
                   <p className="font-medium">{transaction.counterparty}</p>
@@ -164,14 +165,13 @@ async function Transactions() {
               </li>
             )}
 
-            {/* TODO update icon & wording */}
             {transaction.type === 'INIT' && (
               <li className="flex items-center justify-between rounded-xl bg-gray-100 px-3 py-2">
                 <div className="flex items-center gap-4">
-                  <div className="flex w-fit items-center justify-center rounded-full bg-gray-200 p-1">
-                    <ArrowDownIcon size={24} />
+                  <div className="flex w-fit items-center justify-center rounded-full bg-gray-200 p-2">
+                    <CoinsStacked03Icon size={24} />
                   </div>
-                  <p className="font-medium">Initial Balance</p>
+                  <p className="font-medium">{transaction.jar.name}</p>
                 </div>
                 <div className="flex flex-col items-end">
                   <p className="text-lg font-medium">
@@ -181,7 +181,7 @@ async function Transactions() {
                     </span>
                   </p>
                   <p className="text-sm font-medium text-gray-400">
-                    added to {transaction.jar.name}
+                    of starting balance
                   </p>
                 </div>
               </li>
