@@ -3,6 +3,14 @@ SELECT
   st."jarId",
   st.amount
 FROM
+  "InitTransaction" st
+UNION
+ALL
+SELECT
+  st."transactionId",
+  st."jarId",
+  st.amount
+FROM
   "SentTransaction" st
 UNION
 ALL
