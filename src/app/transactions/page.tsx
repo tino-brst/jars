@@ -114,7 +114,7 @@ async function Transactions() {
 
   const jars = await db.jarWithBalance.findMany({
     orderBy: {
-      createdAt: 'desc',
+      name: 'asc',
     },
   })
 

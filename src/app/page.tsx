@@ -32,7 +32,7 @@ async function Home() {
         <AddJarSubmitButton />
       </form>
 
-      <ol className="grid grid-cols-[repeat(auto-fill,minmax(min(8rem,100%),1fr))] gap-2">
+      <ol className="grid grid-cols-[repeat(auto-fill,minmax(min(10rem,100%),1fr))] gap-2">
         {jars.map((jar) => (
           <li
             key={jar.id}
