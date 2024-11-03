@@ -17,6 +17,8 @@ function NewTransactionForms({ jars }: { jars: Array<JarWithBalance> }) {
     TransactionType.SENT,
   )
 
+  const hasMultipleJars = jars.length > 1
+
   return (
     <div className="mb-6 flex flex-col gap-2">
       <Select
@@ -27,8 +29,15 @@ function NewTransactionForms({ jars }: { jars: Array<JarWithBalance> }) {
       >
         <option value={TransactionType.SENT}>Sent</option>
         <option value={TransactionType.RECEIVED}>Received</option>
-        {/* TODO disable/remove if only one jar available */}
-        <option value={TransactionType.MOVED}>Moved</option>
+        {hasMultipleJars ? (
+          <option value={TransactionType.MOVED}>Moved</option>
+        ) : (
+          <optgroup label="Needs at least two jars">
+            <option value={TransactionType.MOVED} disabled>
+              Moved
+            </option>
+          </optgroup>
+        )}
       </Select>
 
       {(transactionType === 'SENT' || transactionType === 'RECEIVED') && (
