@@ -5,6 +5,8 @@ import { z } from 'zod'
 import { db } from '@/lib/db'
 import { revalidatePath } from 'next/cache'
 
+// TODO nonzero input values (amounts, conversionRate)
+
 const sentOrReceivedTransactionFormDataSchema = z.object({
   jarId: z.string().uuid(),
   counterparty: z.string(),
@@ -88,7 +90,6 @@ const movedTransactionFormDataSchema = z.object({
   // Coercion of an empty string to a number (Number('')) returns 0, which is
   // not what we want in the case of the conversionRate, which should default to
   // 1 if not provided
-  // TODO nonzero
   conversionRate: z.preprocess(
     (value) => (value ? Number(value) : undefined),
     z.number().nonnegative().default(1),
