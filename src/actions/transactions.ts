@@ -80,7 +80,7 @@ const movedTransactionFormDataSchema = z.object({
     .nonnegative()
     .step(0.01)
     .transform((value) => value * 100),
-  fee: z.coerce
+  fees: z.coerce
     .number()
     .nonnegative()
     .step(0.01)
@@ -104,8 +104,8 @@ async function createMovedTransaction(formData: FormData) {
     throw parse.error.issues
   }
 
-  const { fromAmount, toAmount, fee, conversionRate } = parse.data
-  const fromAmountAfterFeesAndConversion = (fromAmount - fee) * conversionRate
+  const { fromAmount, toAmount, fees, conversionRate } = parse.data
+  const fromAmountAfterFeesAndConversion = (fromAmount - fees) * conversionRate
   const isValidTransaction = fromAmountAfterFeesAndConversion === toAmount
 
   if (!isValidTransaction) {
