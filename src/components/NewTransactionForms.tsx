@@ -14,7 +14,6 @@ import { Select } from '@/components/primitives/Select'
 import { JarWithBalance, TransactionType } from '@prisma/client'
 
 // TODO clear inputs after submit
-// TODO all transaction inputs have to be > 0 (min="0" is inclusive of zero)
 
 function NewTransactionForms({ jars }: { jars: Array<JarWithBalance> }) {
   const [transactionType, setTransactionType] = useState<TransactionType>(
@@ -72,7 +71,7 @@ function SentTransactionForm({ jars }: { jars: Array<JarWithBalance> }) {
         type="number"
         name="amount"
         step="0.01"
-        min="0"
+        min="0.01"
         max={(jar?.balance ?? 0) / 100}
         className="flex-1"
       />
@@ -126,7 +125,7 @@ function ReceivedTransactionForm({ jars }: { jars: Array<JarWithBalance> }) {
         type="number"
         name="amount"
         step="0.01"
-        min="0"
+        min="0.01"
         className="flex-1"
       />
 
@@ -177,7 +176,7 @@ function MovedTransactionForm({ jars }: { jars: Array<JarWithBalance> }) {
           type="number"
           name="fromAmount"
           step="0.01"
-          min="0"
+          min="0.01"
           max={(fromJar?.balance ?? 0) / 100}
           className="flex-1"
         />
