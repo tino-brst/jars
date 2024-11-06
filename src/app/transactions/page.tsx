@@ -190,11 +190,13 @@ async function Transactions() {
                 </div>
                 <div className="flex flex-col items-end">
                   <div className="flex items-baseline gap-1">
-                    <PlusIcon
-                      size={12}
-                      strokeWidth={4}
-                      className="text-gray-400"
-                    />
+                    {!!transaction.amount && (
+                      <PlusIcon
+                        size={12}
+                        strokeWidth={4}
+                        className="text-gray-400"
+                      />
+                    )}
                     <p className={twMerge('text-lg font-medium')}>
                       {transaction.amount / 100}{' '}
                       <span className="text-base text-gray-500">
