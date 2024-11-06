@@ -81,7 +81,7 @@ model MovedTransaction {
   toJarId       String      @db.Uuid
   toJar         Jar         @relation("movedToTransaction", fields: [toJarId], references: [id])
   toAmount      Int         @default(0) // TODO add db level checks for positive values
-  // TODO add conversion rate and diff fields to account for fees
+  // TODO ✋ add conversion rate and diff fields to account for fees
   // TODO fromJarId and toJarId can't be the same for a given transaction
   // TODO fromAmount can't exceed the fromJar balance
 }

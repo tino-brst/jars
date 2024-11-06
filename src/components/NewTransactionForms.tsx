@@ -153,6 +153,9 @@ function ReceivedTransactionForm({ jars }: { jars: Array<JarWithBalance> }) {
 }
 
 function MovedTransactionForm({ jars }: { jars: Array<JarWithBalance> }) {
+  // TODO 🐛 if the transaction empties the source jar, the form is reset after
+  // submission but the from & to selects are set to the same jar
+
   const nonEmptyJars = jars.filter((jar) => jar.balance > 0)
   const emptyJars = jars.filter((jar) => jar.balance === 0)
 

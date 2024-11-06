@@ -5,6 +5,8 @@ import { z } from 'zod'
 import { db } from '@/lib/db'
 import { revalidatePath } from 'next/cache'
 
+// TODO make revalidation more specific, not all of the things
+
 const sentOrReceivedTransactionFormDataSchema = z.object({
   jarId: z.string().uuid(),
   counterparty: z.string(),
@@ -37,7 +39,6 @@ async function createSentTransaction(formData: FormData) {
     },
   })
 
-  // TODO the revalidate should be specific to jars, not all of the things
   revalidatePath('/', 'layout')
 }
 
@@ -63,7 +64,6 @@ async function createReceivedTransaction(formData: FormData) {
     },
   })
 
-  // TODO the revalidate should be specific to jars, not all of the things
   revalidatePath('/', 'layout')
 }
 
@@ -125,7 +125,6 @@ async function createMovedTransaction(formData: FormData) {
     },
   })
 
-  // TODO the revalidate should be specific to jars, not all of the things
   revalidatePath('/', 'layout')
 }
 

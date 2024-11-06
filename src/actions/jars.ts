@@ -42,7 +42,6 @@ async function createJar(formData: FormData) {
     },
   })
 
-  // TODO the revalidate should be specific to jars, not all of the things
   revalidatePath('/', 'layout')
 }
 
