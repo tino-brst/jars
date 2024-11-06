@@ -277,11 +277,17 @@ function MovedTransactionForm({ jars }: { jars: Array<JarWithBalance> }) {
         </Select>
       </div>
 
-      <Input type="number" name="fees" step="0.01" min="0" />
+      <Input type="number" name="fees" step="0.01" min="0" fallback="0" />
 
       {/* The conversion rate is only relevant when moving money across jars with different currencies */}
       {fromJar?.currency !== toJar?.currency && (
-        <Input type="number" name="conversionRate" step="any" min="0" />
+        <Input
+          type="number"
+          name="conversionRate"
+          step="any"
+          min="0.01"
+          fallback="1"
+        />
       )}
 
       <AddTransactionSubmitButton />
