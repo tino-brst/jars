@@ -5,14 +5,12 @@ import { z } from 'zod'
 import { db } from '@/lib/db'
 import { revalidatePath } from 'next/cache'
 
-// TODO nonzero input values (amounts, conversionRate)
-
 const sentOrReceivedTransactionFormDataSchema = z.object({
   jarId: z.string().uuid(),
   counterparty: z.string(),
   amount: z.coerce
     .number()
-    .nonnegative()
+    .positive()
     .step(0.01)
     .transform((value) => value * 100),
 })
@@ -73,7 +71,7 @@ const movedTransactionFormDataSchema = z.object({
   fromJarId: z.string().uuid(),
   fromAmount: z.coerce
     .number()
-    .nonnegative()
+    .positive()
     .step(0.01)
     .transform((value) => value * 100),
   toJarId: z.string().uuid(),
@@ -92,7 +90,7 @@ const movedTransactionFormDataSchema = z.object({
   // 1 if not provided
   conversionRate: z.preprocess(
     (value) => (value ? Number(value) : undefined),
-    z.number().nonnegative().default(1),
+    z.number().positive().default(1),
   ),
 })
 
