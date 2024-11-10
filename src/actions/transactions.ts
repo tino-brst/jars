@@ -104,11 +104,31 @@ async function createMovedTransaction(formData: FormData) {
   }
 
   const { fromAmount, toAmount, fees, conversionRate } = parse.data
-  const fromAmountAfterFeesAndConversion = (fromAmount - fees) * conversionRate
-  const isValidTransaction = fromAmountAfterFeesAndConversion === toAmount
+
+  // To check if the set of values is valid, we get a computedToAmount from the
+  // fromAmount, fees, and conversionRate; and check if it equals the provided
+  // toAmount. The flooring on the computedToAmount is done so to match the fact
+  // that we store amounts as integers (cents) and that's what the user inputs.
+  // Thus, even if the conversionRate being a float might lead to a value with a
+  // decimal part, we drop it when comparing
+  //
+  // Example:
+  //
+  // Even if the user input is valid, without the flooring our computedToAmount
+  // value would be different and fail validation
+  //
+  // fromAmount = 1000 ($10.00)
+  // toAmount = 1281 ($12.81)
+  // fees = 100 ($1.00)
+  // conversionRate = 1.4242
+  //
+  // computedToAmount = (1000 - 100) * 1.4242 = 1281.78 ≠ 1281 💥
+
+  const computedToAmount = Math.floor((fromAmount - fees) * conversionRate)
+  const isValidTransaction = toAmount === computedToAmount
 
   if (!isValidTransaction) {
-    throw `Invalid transaction (${fromAmountAfterFeesAndConversion / 100} ≠ ${toAmount / 100})`
+    throw `Invalid transaction ((${fromAmount / 100} - ${fees / 100}) * ${conversionRate} = ${computedToAmount / 100} ≠ ${toAmount / 100})`
   }
 
   await db.transaction.create({
