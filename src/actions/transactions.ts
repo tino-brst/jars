@@ -128,7 +128,7 @@ async function createMovedTransaction(formData: FormData) {
   const isValidTransaction = toAmount === computedToAmount
 
   if (!isValidTransaction) {
-    throw `Invalid transaction ((${fromAmount / 100} - ${fees / 100}) * ${conversionRate} = ${computedToAmount / 100} ≠ ${toAmount / 100})`
+    throw `Invalid transaction ((${fromAmount / 100} - ${fees / 100}) × ${conversionRate} = ${computedToAmount / 100} ≠ ${toAmount / 100})`
   }
 
   await db.transaction.create({

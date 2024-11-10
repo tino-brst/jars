@@ -235,8 +235,10 @@ async function Transactions() {
                     </span>
                   </p>
                   <p className="text-sm font-medium text-gray-400">
-                    {Math.abs(transaction.toAmount / 100)}{' '}
-                    {transaction.toJar.currency}
+                    <span className="text-gray-300">
+                      {`(${Math.abs(transaction.fromAmount / 100)} - ${transaction.fees / 100}) × ${transaction.conversionRate} = `}
+                    </span>
+                    {transaction.toAmount / 100} {transaction.toJar.currency}
                   </p>
                 </div>
               </li>

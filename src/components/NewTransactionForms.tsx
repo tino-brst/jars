@@ -13,7 +13,7 @@ import { Input } from '@/components/primitives/Input'
 import { Select } from '@/components/primitives/Select'
 import { JarWithBalance, TransactionType } from '@prisma/client'
 
-// TODO clear inputs after submit
+// TODO clear inputs after submit (I think this already works?)
 
 function NewTransactionForms({ jars }: { jars: Array<JarWithBalance> }) {
   const [transactionType, setTransactionType] = useState<TransactionType>(
@@ -154,7 +154,8 @@ function ReceivedTransactionForm({ jars }: { jars: Array<JarWithBalance> }) {
 
 function MovedTransactionForm({ jars }: { jars: Array<JarWithBalance> }) {
   // TODO 🐛 if the transaction empties the source jar, the form is reset after
-  // submission but the from & to selects are set to the same jar
+  // submission but the from & to selects are set to the same jar.
+  // Actually, looks like any transactions resets the selects to the first jar
 
   const nonEmptyJars = jars.filter((jar) => jar.balance > 0)
   const emptyJars = jars.filter((jar) => jar.balance === 0)
