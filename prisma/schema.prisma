@@ -9,6 +9,9 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+// TODO add db level checks for positive/negative values
+// TODO cascade delete & update
+
 model Jar {
   id                   String                @id @default(uuid()) @db.Uuid
   name                 String
@@ -48,42 +51,42 @@ enum TransactionType {
 
 model InitTransaction {
   transactionId String      @id @unique @db.Uuid
-  transaction   Transaction @relation(fields: [transactionId], references: [id]) // TODO cascade delete & update
+  transaction   Transaction @relation(fields: [transactionId], references: [id])
   jarId         String      @unique @db.Uuid
   jar           Jar         @relation(fields: [jarId], references: [id])
-  amount        Int         @default(0) // TODO add db level checks for negative values
+  amount        Int         @default(0)
 }
 
 model SentTransaction {
   transactionId String      @id @unique @db.Uuid
-  transaction   Transaction @relation(fields: [transactionId], references: [id]) // TODO cascade delete & update
+  transaction   Transaction @relation(fields: [transactionId], references: [id])
   jarId         String      @db.Uuid
   jar           Jar         @relation(fields: [jarId], references: [id])
-  amount        Int         @default(0) // TODO add db level checks for negative values
+  amount        Int         @default(0)
   counterparty  String
 }
 
 model ReceivedTransaction {
   transactionId String      @id @unique @db.Uuid
-  transaction   Transaction @relation(fields: [transactionId], references: [id]) // TODO cascade delete & update
+  transaction   Transaction @relation(fields: [transactionId], references: [id])
   jarId         String      @db.Uuid
   jar           Jar         @relation(fields: [jarId], references: [id])
-  amount        Int         @default(0) // TODO add db level checks for positive values
+  amount        Int         @default(0)
   counterparty  String
 }
 
 model MovedTransaction {
-  transactionId String      @id @unique @db.Uuid
-  transaction   Transaction @relation(fields: [transactionId], references: [id]) // TODO cascade delete & update
-  fromJarId     String      @db.Uuid
-  fromJar       Jar         @relation("movedFromTransaction", fields: [fromJarId], references: [id])
-  fromAmount    Int         @default(0) // TODO add db level checks for negative values
-  toJarId       String      @db.Uuid
-  toJar         Jar         @relation("movedToTransaction", fields: [toJarId], references: [id])
-  toAmount      Int         @default(0) // TODO add db level checks for positive values
-  // TODO ✋ add conversion rate and diff fields to account for fees
+  transactionId  String      @id @unique @db.Uuid
+  transaction    Transaction @relation(fields: [transactionId], references: [id])
+  fromJarId      String      @db.Uuid
+  fromJar        Jar         @relation("movedFromTransaction", fields: [fromJarId], references: [id])
+  fromAmount     Int         @default(0)
+  toJarId        String      @db.Uuid
+  toJar          Jar         @relation("movedToTransaction", fields: [toJarId], references: [id])
+  toAmount       Int         @default(0)
+  fees           Int         @default(0)
+  conversionRate Float       @default(1)
   // TODO fromJarId and toJarId can't be the same for a given transaction
-  // TODO fromAmount can't exceed the fromJar balance
 }
 
 view JarBalanceUpdate {

@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "MovedTransaction" ADD COLUMN     "conversionRate" DOUBLE PRECISION NOT NULL DEFAULT 1,
+ADD COLUMN     "fees" INTEGER NOT NULL DEFAULT 0;

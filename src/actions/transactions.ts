@@ -140,6 +140,8 @@ async function createMovedTransaction(formData: FormData) {
           fromAmount: -parse.data.fromAmount,
           toJarId: parse.data.toJarId,
           toAmount: parse.data.toAmount,
+          fees: parse.data.fees,
+          conversionRate: parse.data.conversionRate,
         },
       },
     },
