@@ -129,9 +129,9 @@ async function Transactions() {
           <Fragment key={transaction.id}>
             {transaction.type === 'INIT' && (
               <li className="flex items-center justify-between rounded-xl bg-gray-100 px-3 py-2">
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3">
                   <div className="flex w-fit items-center justify-center rounded-full bg-gray-200 p-2">
-                    <CoinsStacked03Icon size={24} />
+                    <CoinsStacked03Icon size={20} />
                   </div>
                   <p className="font-medium">{transaction.jar.name}</p>
                 </div>
@@ -151,7 +151,7 @@ async function Transactions() {
                       </span>
                     </p>
                   </div>
-                  <p className="text-sm font-medium text-gray-400">
+                  <p className="text-xs font-medium text-gray-400">
                     Initial Balance
                   </p>
                 </div>
@@ -160,9 +160,9 @@ async function Transactions() {
 
             {transaction.type === 'SENT' && (
               <li className="flex items-center justify-between rounded-xl bg-gray-100 px-3 py-2">
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3">
                   <div className="flex w-fit items-center justify-center rounded-full bg-gray-200 p-2">
-                    <ArrowUpRightIcon size={24} />
+                    <ArrowUpRightIcon size={20} />
                   </div>
                   <p className="font-medium">{transaction.counterparty}</p>
                 </div>
@@ -173,7 +173,7 @@ async function Transactions() {
                       {transaction.jar.currency}
                     </span>
                   </p>
-                  <p className="text-sm font-medium text-gray-400">
+                  <p className="text-xs font-medium text-gray-400">
                     Sent from {transaction.jar.name}
                   </p>
                 </div>
@@ -182,9 +182,9 @@ async function Transactions() {
 
             {transaction.type === 'RECEIVED' && (
               <li className="flex items-center justify-between rounded-xl bg-gray-100 px-3 py-2">
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3">
                   <div className="flex w-fit items-center justify-center rounded-full bg-gray-200 p-2">
-                    <ArrowDownLeftIcon size={24} />
+                    <ArrowDownLeftIcon size={20} />
                   </div>
                   <p className="font-medium">{transaction.counterparty}</p>
                 </div>
@@ -204,7 +204,7 @@ async function Transactions() {
                       </span>
                     </p>
                   </div>
-                  <p className="text-sm font-medium text-gray-400">
+                  <p className="text-xs font-medium text-gray-400">
                     Added to {transaction.jar.name}
                   </p>
                 </div>
@@ -213,9 +213,9 @@ async function Transactions() {
 
             {transaction.type === 'MOVED' && (
               <li className="flex items-center justify-between rounded-xl bg-gray-100 px-3 py-2">
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3">
                   <div className="flex w-fit items-center justify-center rounded-full bg-gray-200 p-2">
-                    <SwitchHorizontal01Icon size={24} />
+                    <SwitchHorizontal01Icon size={20} />
                   </div>
                   <div className="flex items-center gap-1">
                     <p className="font-medium">{transaction.fromJar.name}</p>
@@ -234,7 +234,7 @@ async function Transactions() {
                       {transaction.fromJar.currency}
                     </span>
                   </p>
-                  <p className="text-sm font-medium text-gray-400">
+                  <p className="text-xs font-medium text-gray-400">
                     <span className="text-gray-300">
                       {`(${Math.abs(transaction.fromAmount / 100)} - ${transaction.fees / 100}) × ${transaction.conversionRate} = `}
                     </span>
