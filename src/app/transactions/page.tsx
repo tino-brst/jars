@@ -229,28 +229,24 @@ async function Transactions() {
                 </div>
                 <div className="flex flex-col items-end">
                   <p className="text-lg font-medium">
-                    {Math.abs(transaction.fromAmount / 100)}{' '}
+                    {Math.abs(transaction.toAmount / 100)}{' '}
                     <span className="text-base text-gray-500">
-                      {transaction.fromJar.currency}
+                      {transaction.toJar.currency}
                     </span>
                   </p>
-                  {/* TODO swap values, the toAmount is the main one */}
                   <p className="text-xs font-medium text-gray-400">
-                    <span className="text-gray-300">
-                      {!!transaction.fees &&
-                        !!transaction.conversionRate &&
-                        transaction.conversionRate !== 1 &&
-                        `(${Math.abs(transaction.fromAmount / 100)} - ${transaction.fees / 100}) × ${transaction.conversionRate} = `}
-                      {!!transaction.fees &&
-                        (!transaction.conversionRate ||
-                          transaction.conversionRate === 1) &&
-                        `${Math.abs(transaction.fromAmount / 100)} - ${transaction.fees / 100} = `}
-                      {!transaction.fees &&
-                        !!transaction.conversionRate &&
-                        transaction.conversionRate !== 1 &&
-                        `${Math.abs(transaction.fromAmount / 100)} × ${transaction.conversionRate} = `}
-                    </span>
-                    {transaction.toAmount / 100} {transaction.toJar.currency}
+                    {!!transaction.fees &&
+                      !!transaction.conversionRate &&
+                      transaction.conversionRate !== 1 &&
+                      `(${Math.abs(transaction.fromAmount / 100)} ${transaction.fromJar.currency} - ${transaction.fees / 100}) × ${transaction.conversionRate} `}
+                    {!!transaction.fees &&
+                      (!transaction.conversionRate ||
+                        transaction.conversionRate === 1) &&
+                      `${Math.abs(transaction.fromAmount / 100)} ${transaction.fromJar.currency} - ${transaction.fees / 100} `}
+                    {!transaction.fees &&
+                      !!transaction.conversionRate &&
+                      transaction.conversionRate !== 1 &&
+                      `${Math.abs(transaction.fromAmount / 100)} ${transaction.fromJar.currency} × ${transaction.conversionRate} `}
                   </p>
                 </div>
               </li>
