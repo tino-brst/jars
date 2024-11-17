@@ -10,7 +10,7 @@ datasource db {
 }
 
 // TODO add db level checks for positive/negative values
-// TODO cascade delete & update
+// TODO ✋ cascade delete & update
 
 model Jar {
   id                   String                @id @default(uuid()) @db.Uuid
