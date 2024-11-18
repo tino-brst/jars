@@ -31,6 +31,7 @@ function RootLayout({ children }: { children: React.ReactNode }) {
         <nav className="fixed inset-x-0 bottom-0 flex bg-white/75 ring-1 ring-black/5 backdrop-blur-xl">
           <NavLink href="/">Jars</NavLink>
           <NavLink href="/transactions">Transactions</NavLink>
+          <NavLink href="/cards">Cards</NavLink>
         </nav>
       </body>
     </html>
