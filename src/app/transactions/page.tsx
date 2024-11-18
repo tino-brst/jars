@@ -2,7 +2,6 @@ import { ArrowDownLeftIcon } from '@/components/icons/ArrowDownLeftIcon'
 import { ArrowUpRightIcon } from '@/components/icons/ArrowUpRightIcon'
 import { CoinsStacked03Icon } from '@/components/icons/CoinsStacked03Icon'
 import { SwitchHorizontal01Icon } from '@/components/icons/SwitchHorizontal01Icon'
-import { ChevronRightIcon } from '@/components/icons/ChevronRightIcon'
 import { NewTransactionForms } from '@/components/NewTransactionForms'
 
 import { db } from '@/lib/db'
@@ -18,6 +17,7 @@ import {
 import React, { Fragment } from 'react'
 import { twMerge } from 'tailwind-merge'
 import { PlusIcon } from '@/components/icons/PlusIcon'
+import { ArrowRightIcon } from '@/components/icons/ArrowRightIcon'
 
 type Transaction = Omit<BaseTransaction, 'type'> &
   (
@@ -140,7 +140,7 @@ async function Transactions() {
                     {!!transaction.amount && (
                       <PlusIcon
                         size={12}
-                        strokeWidth={4}
+                        strokeWidth={3}
                         className="text-gray-400"
                       />
                     )}
@@ -193,7 +193,7 @@ async function Transactions() {
                     {!!transaction.amount && (
                       <PlusIcon
                         size={12}
-                        strokeWidth={4}
+                        strokeWidth={3}
                         className="text-gray-400"
                       />
                     )}
@@ -219,9 +219,9 @@ async function Transactions() {
                   </div>
                   <div className="flex items-center gap-1">
                     <p className="font-medium">{transaction.fromJar.name}</p>
-                    <ChevronRightIcon
+                    <ArrowRightIcon
                       size={12}
-                      strokeWidth={4}
+                      strokeWidth={3}
                       className="text-gray-400"
                     />
                     <p className="font-medium">{transaction.toJar.name}</p>
