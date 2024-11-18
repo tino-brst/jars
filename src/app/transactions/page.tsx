@@ -128,7 +128,7 @@ async function Transactions() {
         {transactions.map((transaction) => (
           <Fragment key={transaction.id}>
             {transaction.type === 'INIT' && (
-              <li className="flex items-center justify-between rounded-xl bg-gray-100 px-3 py-2">
+              <li className="flex min-h-16 items-center justify-between rounded-xl bg-gray-100 px-3 py-2">
                 <div className="flex items-center gap-3">
                   <div className="flex w-fit items-center justify-center rounded-full bg-gray-200 p-2">
                     <CoinsStacked03Icon size={20} />
@@ -159,7 +159,7 @@ async function Transactions() {
             )}
 
             {transaction.type === 'SENT' && (
-              <li className="flex items-center justify-between rounded-xl bg-gray-100 px-3 py-2">
+              <li className="flex min-h-16 items-center justify-between rounded-xl bg-gray-100 px-3 py-2">
                 <div className="flex items-center gap-3">
                   <div className="flex w-fit items-center justify-center rounded-full bg-gray-200 p-2">
                     <ArrowUpRightIcon size={20} />
@@ -181,7 +181,7 @@ async function Transactions() {
             )}
 
             {transaction.type === 'RECEIVED' && (
-              <li className="flex items-center justify-between rounded-xl bg-gray-100 px-3 py-2">
+              <li className="flex min-h-16 items-center justify-between rounded-xl bg-gray-100 px-3 py-2">
                 <div className="flex items-center gap-3">
                   <div className="flex w-fit items-center justify-center rounded-full bg-gray-200 p-2">
                     <ArrowDownLeftIcon size={20} />
@@ -212,7 +212,7 @@ async function Transactions() {
             )}
 
             {transaction.type === 'MOVED' && (
-              <li className="flex items-center justify-between rounded-xl bg-gray-100 px-3 py-2">
+              <li className="flex min-h-16 items-center justify-between rounded-xl bg-gray-100 px-3 py-2">
                 <div className="flex items-center gap-3">
                   <div className="flex w-fit items-center justify-center rounded-full bg-gray-200 p-2">
                     <SwitchHorizontal01Icon size={20} />
