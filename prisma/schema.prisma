@@ -10,7 +10,10 @@ datasource db {
 }
 
 // TODO add db level checks for positive/negative values
-// TODO ✋ cascade delete & update
+
+// TODO cascade transaction updates. Updating a field on a
+// transaction(moved/received/etc) should update the updatedAt on the
+// corresponding transaction
 
 model Jar {
   id                   String                @id @default(uuid()) @db.Uuid
