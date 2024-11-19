@@ -15,6 +15,9 @@ datasource db {
 // transaction(moved/received/etc) should update the updatedAt on the
 // corresponding transaction
 
+// TODO unique constraints to check that a given card ID only belongs to one
+// jar? Same for transactions, etc
+
 model Jar {
   id                   String                @id @default(uuid()) @db.Uuid
   name                 String
@@ -26,6 +29,7 @@ model Jar {
   receivedTransaction  ReceivedTransaction[]
   movedFromTransaction MovedTransaction[]    @relation("movedFromTransaction")
   movedToTransaction   MovedTransaction[]    @relation("movedToTransaction")
+  card                 Card[]
 }
 
 enum Currency {
@@ -89,6 +93,27 @@ model MovedTransaction {
   toAmount       Int         @default(0)
   fees           Int         @default(0)
   conversionRate Float       @default(1)
+}
+
+model Card {
+  id             String     @id @default(uuid()) @db.Uuid
+  jarId          String     @unique @db.Uuid
+  jar            Jar        @relation(fields: [jarId], references: [id])
+  type           CardType
+  issuer         CardIssuer
+  lastFourDigits String
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+}
+
+enum CardType {
+  DEBIT
+  CREDIT
+}
+
+enum CardIssuer {
+  VISA
+  MASTERCARD
 }
 
 view JarBalanceUpdate {
