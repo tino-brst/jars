@@ -5,6 +5,8 @@ import { Input } from '@/components/primitives/Input'
 import { AddJarSubmitButton } from '@/components/AddJarSubmitButton'
 import { Currency } from '@prisma/client'
 
+// TODO add prop sorting to Prettier/ESLint
+
 async function Home() {
   const jars = await db.jarWithBalance.findMany({
     orderBy: {
