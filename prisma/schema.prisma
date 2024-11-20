@@ -97,7 +97,7 @@ model MovedTransaction {
 
 model Card {
   id             String     @id @default(uuid()) @db.Uuid
-  jarId          String     @unique @db.Uuid
+  jarId          String     @db.Uuid
   jar            Jar        @relation(fields: [jarId], references: [id])
   type           CardType
   issuer         CardIssuer
