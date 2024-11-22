@@ -40,10 +40,9 @@ enum Currency {
   EUR
 }
 
-// TODO ✋ add name field to card
-
 model Card {
   id             String     @id @default(uuid()) @db.Uuid
+  name           String
   type           CardType
   issuer         CardIssuer
   lastFourDigits String
