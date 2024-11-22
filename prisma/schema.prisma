@@ -37,6 +37,29 @@ enum Currency {
   EUR
 }
 
+// TODO ✋ add name field to card
+// TODO support associating a card with multiple jars
+// TODO make sure a card can only be associated with one jar per currency (how tho'? at the DB level)
+
+model Card {
+  id             String     @id @default(uuid()) @db.Uuid
+  type           CardType
+  issuer         CardIssuer
+  lastFourDigits String
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+}
+
+enum CardType {
+  DEBIT
+  CREDIT
+}
+
+enum CardIssuer {
+  VISA
+  MASTERCARD
+}
+
 model Transaction {
   id                  String               @id @default(uuid()) @db.Uuid
   type                TransactionType
@@ -92,29 +115,6 @@ model MovedTransaction {
   toAmount       Int         @default(0)
   fees           Int         @default(0)
   conversionRate Float       @default(1)
-}
-
-// TODO ✋ add name field to card
-// TODO support associating a card with multiple jars
-// TODO make sure a card can only be associated with one jar per currency (how tho'? at the DB level)
-
-model Card {
-  id             String     @id @default(uuid()) @db.Uuid
-  type           CardType
-  issuer         CardIssuer
-  lastFourDigits String
-  createdAt      DateTime   @default(now())
-  updatedAt      DateTime   @updatedAt
-}
-
-enum CardType {
-  DEBIT
-  CREDIT
-}
-
-enum CardIssuer {
-  VISA
-  MASTERCARD
 }
 
 view JarBalanceUpdate {
