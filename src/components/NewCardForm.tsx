@@ -46,8 +46,7 @@ function NewCardForm({ jars }: { jars: Array<Jar> }) {
           pattern="\d{4,4}"
           autoComplete="off"
         />
-        <fieldset className="flex flex-col gap-1 rounded-lg border border-dashed p-3 pt-0.5 text-center">
-          <legend className="px-1 text-sm font-medium">Jars</legend>
+        <fieldset className="flex flex-col gap-1 rounded-lg border border-dashed px-3 py-2">
           {jars.map((jar) => (
             <label key={jar.id} className="flex items-center gap-2">
               <Checkbox
