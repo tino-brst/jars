@@ -26,6 +26,8 @@ model Account {
   updatedAt DateTime @updatedAt
 }
 
+// TODO ✋ make the name optional and use currency as fallback
+
 model Jar {
   id                   String                @id @default(uuid()) @db.Uuid
   name                 String

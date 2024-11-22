@@ -14,12 +14,25 @@ async function Home() {
     },
   })
 
+  const accounts = await db.account.findMany({
+    orderBy: {
+      createdAt: 'desc',
+    },
+  })
+
   return (
     <main>
       <h1 className="mb-4 text-3xl font-bold">Jars</h1>
 
       <form action={createJar} className="mb-6 flex flex-col gap-2">
         <div className="flex flex-col gap-2">
+          <Select name="accountId" required>
+            {accounts.map((account) => (
+              <option key={account.id} value={account.id}>
+                {account.name}
+              </option>
+            ))}
+          </Select>
           <div className="flex gap-2">
             <Input required type="text" name="name" className="flex-1" />
             <Select name="currency" defaultValue={Currency.USD} required>

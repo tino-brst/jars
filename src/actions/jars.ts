@@ -7,6 +7,7 @@ import { revalidatePath } from 'next/cache'
 import { Currency } from '@prisma/client'
 
 const schema = z.object({
+  accountId: z.string().uuid(),
   name: z.string(),
   currency: z.nativeEnum(Currency),
   initialBalance: z.coerce
@@ -26,9 +27,20 @@ async function createJar(formData: FormData) {
 
   const { initialBalance, ...data } = parse.data
 
+  const sameAccountJarsWithGivenCurrency = await db.jar.findMany({
+    where: {
+      accountId: data.accountId,
+      currency: data.currency,
+    },
+  })
+
+  const isFirstAccountJarWithGivenCurrency =
+    sameAccountJarsWithGivenCurrency.length === 0
+
   await db.jar.create({
     data: {
       ...data,
+      isPrimary: isFirstAccountJarWithGivenCurrency,
       initTransaction: {
         create: {
           amount: initialBalance,
