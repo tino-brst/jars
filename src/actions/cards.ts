@@ -14,32 +14,17 @@ const schema = z.object({
     .string()
     .length(4)
     .regex(RegExp('\\d{4,4}'), 'Must be 4 digits'),
-  jarIds: z.array(z.string().uuid()).nonempty(),
 })
 
 async function createCard(formData: FormData) {
-  const parse = schema.safeParse({
-    ...Object.fromEntries(formData),
-    jarIds: formData.getAll('jarIds'),
-  })
+  const parse = schema.safeParse(Object.fromEntries(formData))
 
   if (!parse.success) {
     throw parse.error.issues
   }
 
-  const { jarIds, ...data } = parse.data
-
   await db.card.create({
-    data: {
-      ...data,
-      jars: {
-        create: jarIds.map((jarId) => ({
-          jar: {
-            connect: { id: jarId },
-          },
-        })),
-      },
-    },
+    data: parse.data,
   })
 
   revalidatePath('/', 'layout')

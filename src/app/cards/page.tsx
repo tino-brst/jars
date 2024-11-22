@@ -9,17 +9,11 @@ async function Cards() {
     },
   })
 
-  const jars = await db.jar.findMany({
-    orderBy: {
-      name: 'asc',
-    },
-  })
-
   return (
     <main>
       <h1 className="mb-4 text-3xl font-bold">Cards</h1>
 
-      <NewCardForm jars={jars} />
+      <NewCardForm />
 
       <ol className="grid grid-cols-[repeat(auto-fill,minmax(min(10rem,100%),1fr))] gap-2">
         {cards.map((card) => (
