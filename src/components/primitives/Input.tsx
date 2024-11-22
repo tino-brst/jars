@@ -1,4 +1,4 @@
-import { ComponentPropsWithRef } from 'react'
+import { ComponentPropsWithRef, HTMLInputTypeAttribute } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 function Input({
@@ -10,7 +10,10 @@ function Input({
   max,
   fallback,
   ...props
-}: ComponentPropsWithRef<'input'> & { fallback?: string | number }) {
+}: Omit<ComponentPropsWithRef<'input'>, 'type'> & {
+  type?: Extract<HTMLInputTypeAttribute, 'text' | 'number'>
+  fallback?: string | number
+}) {
   return (
     <input
       required={required}
