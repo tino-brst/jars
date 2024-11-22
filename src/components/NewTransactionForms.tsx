@@ -15,6 +15,8 @@ import { JarWithBalance, TransactionType } from '@prisma/client'
 
 // TODO clear inputs after submit (I think this already works?)
 
+// TODO ✋ card transaction form
+
 function NewTransactionForms({ jars }: { jars: Array<JarWithBalance> }) {
   const [transactionType, setTransactionType] = useState<TransactionType>(
     TransactionType.SENT,

@@ -29,9 +29,6 @@ model Jar {
   receivedTransaction  ReceivedTransaction[]
   movedFromTransaction MovedTransaction[]    @relation("movedFromTransaction")
   movedToTransaction   MovedTransaction[]    @relation("movedToTransaction")
-  cards                CardJar[]
-
-  @@unique([id, currency])
 }
 
 enum Currency {
@@ -48,7 +45,6 @@ model Card {
   lastFourDigits String
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
-  jars           CardJar[]
 }
 
 enum CardType {
@@ -59,17 +55,6 @@ enum CardType {
 enum CardIssuer {
   VISA
   MASTERCARD
-}
-
-model CardJar {
-  cardId      String   @db.Uuid
-  card        Card     @relation(fields: [cardId], references: [id])
-  jarId       String   @db.Uuid
-  jarCurrency Currency
-  jar         Jar      @relation(fields: [jarId, jarCurrency], references: [id, currency])
-
-  @@id([cardId, jarId])
-  @@unique([cardId, jarCurrency])
 }
 
 model Transaction {
