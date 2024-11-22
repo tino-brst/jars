@@ -15,8 +15,8 @@ datasource db {
 // transaction(moved/received/etc) should update the updatedAt on the
 // corresponding transaction
 
-// TODO unique constraints to check that a given card ID only belongs to one
-// jar? Same for transactions, etc
+// TODO unique constraints to check that a given transaction ID only belongs to one
+// jar?
 
 model Jar {
   id                   String                @id @default(uuid()) @db.Uuid
