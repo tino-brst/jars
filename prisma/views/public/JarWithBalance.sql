@@ -4,6 +4,7 @@ SELECT
   j.currency,
   j."createdAt",
   j."updatedAt",
+  j."accountId",
   COALESCE(b.balance, 0) AS balance
 FROM
   (

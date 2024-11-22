@@ -19,11 +19,12 @@ datasource db {
 // one jar?
 
 model Account {
-  id        String   @id @default(uuid()) @db.Uuid
-  name      String
-  jars      Jar[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id              String           @id @default(uuid()) @db.Uuid
+  name            String
+  jars            Jar[]
+  jarsWithBalance JarWithBalance[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
 }
 
 // TODO ✋ make the name optional and use currency as fallback
@@ -147,4 +148,6 @@ view JarWithBalance {
   createdAt DateTime
   updatedAt DateTime
   balance   Int
+  accountId String   @db.Uuid
+  account   Account  @relation(fields: [accountId], references: [id])
 }
