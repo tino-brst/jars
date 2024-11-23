@@ -125,10 +125,11 @@ function SentTransactionForm({
           placeholder="to"
           className="flex-1"
         />
-        <p>from</p>
+        from
         <Select
           required
           name="jarId"
+          className="flex-1"
           value={jarId}
           onChange={(event) => setJarId(event.target.value)}
         >
@@ -179,8 +180,8 @@ function ReceivedTransactionForm({
           placeholder="from"
           className="flex-1"
         />
-        <p>to</p>
-        <Select required name="jarId">
+        to
+        <Select required name="jarId" className="flex-1">
           {accountsWithJars.map((account) => (
             <optgroup key={account.id} label={account.name}>
               {account.jarsWithBalance.map((jar) => (
