@@ -16,7 +16,13 @@ async function Jars() {
   })
 
   const hasAccounts = accounts.length > 0
-  const hasJars = accounts.some((account) => account.jarsWithBalance.length > 0)
+
+  const accountsWithJars = accounts.filter(
+    (account) => account.jarsWithBalance.length > 0,
+  )
+  const hasAccountsWithJars = accounts.some(
+    (account) => account.jarsWithBalance.length > 0,
+  )
 
   return (
     <main>
@@ -26,9 +32,9 @@ async function Jars() {
         <>
           <NewJarForm accounts={accounts} />
 
-          {hasJars && (
+          {hasAccountsWithJars && (
             <ol className="flex flex-col gap-4">
-              {accounts.map((account) => (
+              {accountsWithJars.map((account) => (
                 <li key={account.id} className="flex flex-col gap-1">
                   <p className="pl-3 text-sm font-medium text-gray-400">
                     {account.name}
@@ -39,7 +45,9 @@ async function Jars() {
                         key={jar.id}
                         className="flex flex-col gap-1 rounded-xl bg-gray-100 px-3 py-2"
                       >
-                        <p className="truncate font-medium">{jar.name}</p>
+                        <p className="truncate font-medium">
+                          {jar.name ?? jar.currency}
+                        </p>
                         <div className="flex items-baseline gap-1">
                           <p className="text-2xl font-medium">
                             {jar.balance / 100}
