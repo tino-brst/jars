@@ -6,6 +6,9 @@ async function Accounts() {
     orderBy: {
       createdAt: 'desc',
     },
+    include: {
+      jars: true,
+    },
   })
 
   const accountTotalBalancesByCurrency = await db.jarWithBalance.groupBy({
@@ -39,9 +42,15 @@ async function Accounts() {
           {accountsWithTotalBalancesByCurrency.map((account) => (
             <li
               key={account.id}
-              className="flex flex-col gap-1 rounded-xl bg-gray-100 px-3 py-3"
+              className="flex flex-col rounded-xl bg-gray-100 px-3 py-3"
             >
               <p className="font-medium">{account.name}</p>
+              {!account.jars.length && (
+                <p className="text-sm font-medium text-gray-400">
+                  No jars on this account yet
+                </p>
+              )}
+
               {!!account.totalBalancesByCurrency.length && (
                 <ul className="flex gap-4">
                   {account.totalBalancesByCurrency.map((balance) => (
