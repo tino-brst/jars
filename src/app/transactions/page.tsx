@@ -118,142 +118,147 @@ async function Transactions() {
     },
   })
 
+  const hasTransactions = transactions.length > 0
+
   return (
     <main>
       <h1 className="mb-4 text-3xl font-bold">Transactions</h1>
 
+      {/* TODO empty state, only show if there are any jars already */}
       <NewTransactionForms jars={jars} />
 
-      <ol className="flex flex-col gap-2">
-        {transactions.map((transaction) => (
-          <Fragment key={transaction.id}>
-            {transaction.type === 'INIT' && (
-              <li className="flex min-h-16 items-center justify-between rounded-xl bg-gray-100 px-3 py-2">
-                <div className="flex items-center gap-3">
-                  <div className="flex w-fit items-center justify-center rounded-full bg-gray-200 p-2">
-                    <CoinsStacked03Icon size={20} />
+      {hasTransactions && (
+        <ol className="flex flex-col gap-2">
+          {transactions.map((transaction) => (
+            <Fragment key={transaction.id}>
+              {transaction.type === 'INIT' && (
+                <li className="flex min-h-16 items-center justify-between rounded-xl bg-gray-100 px-3 py-2">
+                  <div className="flex items-center gap-3">
+                    <div className="flex w-fit items-center justify-center rounded-full bg-gray-200 p-2">
+                      <CoinsStacked03Icon size={20} />
+                    </div>
+                    <p className="font-medium">{transaction.jar.name}</p>
                   </div>
-                  <p className="font-medium">{transaction.jar.name}</p>
-                </div>
-                <div className="flex flex-col items-end">
-                  <div className="flex items-baseline gap-1">
-                    {!!transaction.amount && (
-                      <PlusIcon
-                        size={12}
-                        strokeWidth={3}
-                        className="text-gray-400"
-                      />
-                    )}
+                  <div className="flex flex-col items-end">
+                    <div className="flex items-baseline gap-1">
+                      {!!transaction.amount && (
+                        <PlusIcon
+                          size={12}
+                          strokeWidth={3}
+                          className="text-gray-400"
+                        />
+                      )}
+                      <p className="text-lg font-medium">
+                        {transaction.amount / 100}{' '}
+                        <span className="text-base text-gray-500">
+                          {transaction.jar.currency}
+                        </span>
+                      </p>
+                    </div>
+                    <p className="text-xs font-medium text-gray-400">
+                      Initial Balance
+                    </p>
+                  </div>
+                </li>
+              )}
+
+              {transaction.type === 'SENT' && (
+                <li className="flex min-h-16 items-center justify-between rounded-xl bg-gray-100 px-3 py-2">
+                  <div className="flex items-center gap-3">
+                    <div className="flex w-fit items-center justify-center rounded-full bg-gray-200 p-2">
+                      <ArrowUpRightIcon size={20} />
+                    </div>
+                    <p className="font-medium">{transaction.counterparty}</p>
+                  </div>
+                  <div className="flex flex-col items-end">
                     <p className="text-lg font-medium">
-                      {transaction.amount / 100}{' '}
+                      {Math.abs(transaction.amount / 100)}{' '}
                       <span className="text-base text-gray-500">
                         {transaction.jar.currency}
                       </span>
                     </p>
+                    <p className="text-xs font-medium text-gray-400">
+                      Sent from {transaction.jar.name}
+                    </p>
                   </div>
-                  <p className="text-xs font-medium text-gray-400">
-                    Initial Balance
-                  </p>
-                </div>
-              </li>
-            )}
+                </li>
+              )}
 
-            {transaction.type === 'SENT' && (
-              <li className="flex min-h-16 items-center justify-between rounded-xl bg-gray-100 px-3 py-2">
-                <div className="flex items-center gap-3">
-                  <div className="flex w-fit items-center justify-center rounded-full bg-gray-200 p-2">
-                    <ArrowUpRightIcon size={20} />
+              {transaction.type === 'RECEIVED' && (
+                <li className="flex min-h-16 items-center justify-between rounded-xl bg-gray-100 px-3 py-2">
+                  <div className="flex items-center gap-3">
+                    <div className="flex w-fit items-center justify-center rounded-full bg-gray-200 p-2">
+                      <ArrowDownLeftIcon size={20} />
+                    </div>
+                    <p className="font-medium">{transaction.counterparty}</p>
                   </div>
-                  <p className="font-medium">{transaction.counterparty}</p>
-                </div>
-                <div className="flex flex-col items-end">
-                  <p className="text-lg font-medium">
-                    {Math.abs(transaction.amount / 100)}{' '}
-                    <span className="text-base text-gray-500">
-                      {transaction.jar.currency}
-                    </span>
-                  </p>
-                  <p className="text-xs font-medium text-gray-400">
-                    Sent from {transaction.jar.name}
-                  </p>
-                </div>
-              </li>
-            )}
+                  <div className="flex flex-col items-end">
+                    <div className="flex items-baseline gap-1">
+                      {!!transaction.amount && (
+                        <PlusIcon
+                          size={12}
+                          strokeWidth={3}
+                          className="text-gray-400"
+                        />
+                      )}
+                      <p className={twMerge('text-lg font-medium')}>
+                        {transaction.amount / 100}{' '}
+                        <span className="text-base text-gray-500">
+                          {transaction.jar.currency}
+                        </span>
+                      </p>
+                    </div>
+                    <p className="text-xs font-medium text-gray-400">
+                      Added to {transaction.jar.name}
+                    </p>
+                  </div>
+                </li>
+              )}
 
-            {transaction.type === 'RECEIVED' && (
-              <li className="flex min-h-16 items-center justify-between rounded-xl bg-gray-100 px-3 py-2">
-                <div className="flex items-center gap-3">
-                  <div className="flex w-fit items-center justify-center rounded-full bg-gray-200 p-2">
-                    <ArrowDownLeftIcon size={20} />
-                  </div>
-                  <p className="font-medium">{transaction.counterparty}</p>
-                </div>
-                <div className="flex flex-col items-end">
-                  <div className="flex items-baseline gap-1">
-                    {!!transaction.amount && (
-                      <PlusIcon
+              {transaction.type === 'MOVED' && (
+                <li className="flex min-h-16 items-center justify-between rounded-xl bg-gray-100 px-3 py-2">
+                  <div className="flex items-center gap-3">
+                    <div className="flex w-fit items-center justify-center rounded-full bg-gray-200 p-2">
+                      <SwitchHorizontal01Icon size={20} />
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <p className="font-medium">{transaction.fromJar.name}</p>
+                      <ArrowRightIcon
                         size={12}
                         strokeWidth={3}
                         className="text-gray-400"
                       />
-                    )}
-                    <p className={twMerge('text-lg font-medium')}>
-                      {transaction.amount / 100}{' '}
+                      <p className="font-medium">{transaction.toJar.name}</p>
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-end">
+                    <p className="text-lg font-medium">
+                      {Math.abs(transaction.toAmount / 100)}{' '}
                       <span className="text-base text-gray-500">
-                        {transaction.jar.currency}
+                        {transaction.toJar.currency}
                       </span>
                     </p>
+                    <p className="text-xs font-medium text-gray-400">
+                      {!!transaction.fees &&
+                        !!transaction.conversionRate &&
+                        transaction.conversionRate !== 1 &&
+                        `(${Math.abs(transaction.fromAmount / 100)} ${transaction.fromJar.currency} - ${transaction.fees / 100}) × ${transaction.conversionRate} `}
+                      {!!transaction.fees &&
+                        (!transaction.conversionRate ||
+                          transaction.conversionRate === 1) &&
+                        `${Math.abs(transaction.fromAmount / 100)} ${transaction.fromJar.currency} - ${transaction.fees / 100} `}
+                      {!transaction.fees &&
+                        !!transaction.conversionRate &&
+                        transaction.conversionRate !== 1 &&
+                        `${Math.abs(transaction.fromAmount / 100)} ${transaction.fromJar.currency} × ${transaction.conversionRate} `}
+                    </p>
                   </div>
-                  <p className="text-xs font-medium text-gray-400">
-                    Added to {transaction.jar.name}
-                  </p>
-                </div>
-              </li>
-            )}
-
-            {transaction.type === 'MOVED' && (
-              <li className="flex min-h-16 items-center justify-between rounded-xl bg-gray-100 px-3 py-2">
-                <div className="flex items-center gap-3">
-                  <div className="flex w-fit items-center justify-center rounded-full bg-gray-200 p-2">
-                    <SwitchHorizontal01Icon size={20} />
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <p className="font-medium">{transaction.fromJar.name}</p>
-                    <ArrowRightIcon
-                      size={12}
-                      strokeWidth={3}
-                      className="text-gray-400"
-                    />
-                    <p className="font-medium">{transaction.toJar.name}</p>
-                  </div>
-                </div>
-                <div className="flex flex-col items-end">
-                  <p className="text-lg font-medium">
-                    {Math.abs(transaction.toAmount / 100)}{' '}
-                    <span className="text-base text-gray-500">
-                      {transaction.toJar.currency}
-                    </span>
-                  </p>
-                  <p className="text-xs font-medium text-gray-400">
-                    {!!transaction.fees &&
-                      !!transaction.conversionRate &&
-                      transaction.conversionRate !== 1 &&
-                      `(${Math.abs(transaction.fromAmount / 100)} ${transaction.fromJar.currency} - ${transaction.fees / 100}) × ${transaction.conversionRate} `}
-                    {!!transaction.fees &&
-                      (!transaction.conversionRate ||
-                        transaction.conversionRate === 1) &&
-                      `${Math.abs(transaction.fromAmount / 100)} ${transaction.fromJar.currency} - ${transaction.fees / 100} `}
-                    {!transaction.fees &&
-                      !!transaction.conversionRate &&
-                      transaction.conversionRate !== 1 &&
-                      `${Math.abs(transaction.fromAmount / 100)} ${transaction.fromJar.currency} × ${transaction.conversionRate} `}
-                  </p>
-                </div>
-              </li>
-            )}
-          </Fragment>
-        ))}
-      </ol>
+                </li>
+              )}
+            </Fragment>
+          ))}
+        </ol>
+      )}
     </main>
   )
 }
