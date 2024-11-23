@@ -4,7 +4,7 @@ const nextConfig = {
     return [
       {
         source: '/',
-        destination: '/jars',
+        destination: '/accounts',
         permanent: false,
       },
     ]
