@@ -11,14 +11,23 @@ import { AddTransactionSubmitButton } from '@/components/AddTransactionSubmitBut
 
 import { Input } from '@/components/primitives/Input'
 import { Select } from '@/components/primitives/Select'
-import { JarWithBalance, TransactionType } from '@prisma/client'
+import { Account, JarWithBalance, TransactionType } from '@prisma/client'
 
 // TODO clear inputs after submit (I think this already works?)
 // TODO stricter ts, array[number]: something | undefined
 
 // TODO ✋ card transaction form
 
-function NewTransactionForms({ jars }: { jars: Array<JarWithBalance> }) {
+type AccountWithJarsWithBalance = Account & {
+  jarsWithBalance: Array<JarWithBalance>
+}
+
+function NewTransactionForms({
+  accounts,
+}: {
+  accounts: Array<AccountWithJarsWithBalance>
+}) {
+  const jars = accounts.flatMap((account) => account.jarsWithBalance)
   const hasNonEmptyJars = jars.some((jar) => jar.balance > 0)
   const hasMoreThanOneJar = jars.length > 1
 
@@ -67,22 +76,33 @@ function NewTransactionForms({ jars }: { jars: Array<JarWithBalance> }) {
         )}
       </Select>
 
-      {transactionType === 'SENT' && <SentTransactionForm jars={jars} />}
-
-      {transactionType === 'RECEIVED' && (
-        <ReceivedTransactionForm jars={jars} />
+      {transactionType === 'SENT' && (
+        <SentTransactionForm accounts={accounts} />
       )}
 
-      {transactionType === 'MOVED' && <MovedTransactionForm jars={jars} />}
+      {transactionType === 'RECEIVED' && (
+        <ReceivedTransactionForm accounts={accounts} />
+      )}
+
+      {transactionType === 'MOVED' && (
+        <MovedTransactionForm accounts={accounts} />
+      )}
     </div>
   )
 }
 
-function SentTransactionForm({ jars }: { jars: Array<JarWithBalance> }) {
-  const nonEmptyJars = jars.filter((jar) => jar.balance > 0)
-  const emptyJars = jars.filter((jar) => jar.balance === 0)
+function SentTransactionForm({
+  accounts,
+}: {
+  accounts: Array<AccountWithJarsWithBalance>
+}) {
+  const accountsWithJars = accounts.filter(
+    (account) => account.jarsWithBalance.length > 0,
+  )
 
-  const [jarId, setJarId] = useState(nonEmptyJars[0].id)
+  const jars = accounts.flatMap((account) => account.jarsWithBalance)
+  const firstNonEmptyJar = jars.find((jar) => jar.balance > 0)
+  const [jarId, setJarId] = useState(firstNonEmptyJar?.id)
   const jar = jars.find((jar) => jar.id === jarId)
 
   return (
@@ -112,23 +132,17 @@ function SentTransactionForm({ jars }: { jars: Array<JarWithBalance> }) {
           value={jarId}
           onChange={(event) => setJarId(event.target.value)}
         >
-          {nonEmptyJars.map((jar) => (
-            <option value={jar.id} key={jar.id}>
-              {jar.name} ({jar.currency})
-            </option>
+          {accountsWithJars.map((account) => (
+            <optgroup key={account.id} label={account.name}>
+              {account.jarsWithBalance.map((jar) => (
+                <option key={jar.id} value={jar.id} disabled={!jar.balance}>
+                  {account.name}
+                  {' / '}
+                  {jar.name ? `${jar.name} (${jar.currency})` : jar.currency}
+                </option>
+              ))}
+            </optgroup>
           ))}
-          {!!emptyJars.length && (
-            <>
-              <hr />
-              <optgroup label="Empty jars">
-                {emptyJars.map((jar) => (
-                  <option value={jar.id} key={jar.id} disabled>
-                    {jar.name} ({jar.currency})
-                  </option>
-                ))}
-              </optgroup>
-            </>
-          )}
         </Select>
       </div>
 
@@ -137,7 +151,15 @@ function SentTransactionForm({ jars }: { jars: Array<JarWithBalance> }) {
   )
 }
 
-function ReceivedTransactionForm({ jars }: { jars: Array<JarWithBalance> }) {
+function ReceivedTransactionForm({
+  accounts,
+}: {
+  accounts: Array<AccountWithJarsWithBalance>
+}) {
+  const accountsWithJars = accounts.filter(
+    (account) => account.jarsWithBalance.length > 0,
+  )
+
   return (
     <form className="flex flex-col gap-2" action={createReceivedTransaction}>
       <Input
@@ -159,10 +181,16 @@ function ReceivedTransactionForm({ jars }: { jars: Array<JarWithBalance> }) {
         />
         <p>to</p>
         <Select required name="jarId">
-          {jars.map((jar) => (
-            <option value={jar.id} key={jar.id}>
-              {jar.name} ({jar.currency})
-            </option>
+          {accountsWithJars.map((account) => (
+            <optgroup key={account.id} label={account.name}>
+              {account.jarsWithBalance.map((jar) => (
+                <option key={jar.id} value={jar.id}>
+                  {account.name}
+                  {' / '}
+                  {jar.name ? `${jar.name} (${jar.currency})` : jar.currency}
+                </option>
+              ))}
+            </optgroup>
           ))}
         </Select>
       </div>
@@ -172,25 +200,31 @@ function ReceivedTransactionForm({ jars }: { jars: Array<JarWithBalance> }) {
   )
 }
 
-function MovedTransactionForm({ jars }: { jars: Array<JarWithBalance> }) {
+function MovedTransactionForm({
+  accounts,
+}: {
+  accounts: Array<AccountWithJarsWithBalance>
+}) {
   // TODO 🐛 if the transaction empties the source jar, the form is reset after
-  // submission but the from & to selects are set to the same jar.
-  // Actually, looks like any transactions resets the selects to the first jar
+  // submission but the from & to selects are set to the same jar. Actually,
+  // looks like any transactions resets the selects to the first jar (even if
+  // disabled)
 
-  const nonEmptyJars = jars.filter((jar) => jar.balance > 0)
-  const emptyJars = jars.filter((jar) => jar.balance === 0)
-
-  const [fromJarId, setFromJarId] = useState(nonEmptyJars[0].id)
-  const fromJar = jars.find((jar) => jar.id === fromJarId)
-  const jarsWithoutFromJar = jars.filter((jar) => jar.id !== fromJarId)
-
-  const [toJarId, setToJarId] = useState(jarsWithoutFromJar[0].id)
-  const toJar = jars.find((jar) => jar.id === toJarId)
-  const nonEmptyJarsWithoutToJar = nonEmptyJars.filter(
-    (jar) => jar.id !== toJarId,
+  const accountsWithJars = accounts.filter(
+    (account) => account.jarsWithBalance.length > 0,
   )
 
-  const isToJarEmpty = !toJar?.balance
+  const jars = accounts.flatMap((account) => account.jarsWithBalance)
+
+  const firstNonEmptyJar = jars.find((jar) => jar.balance > 0)
+  const [fromJarId, setFromJarId] = useState(firstNonEmptyJar?.id)
+  const fromJar = jars.find((jar) => jar.id === fromJarId)
+
+  const firstJarNotFromJar = jars.find((jar) => jar.id !== fromJarId)
+  const [toJarId, setToJarId] = useState(firstJarNotFromJar?.id)
+  const toJar = jars.find((jar) => jar.id === toJarId)
+
+  const isJarSwapValid = !!toJar?.balance
 
   return (
     <form className="flex flex-col gap-2" action={createMovedTransaction}>
@@ -220,34 +254,18 @@ function MovedTransactionForm({ jars }: { jars: Array<JarWithBalance> }) {
             setFromJarId(newFromJarId)
           }}
         >
-          {nonEmptyJarsWithoutToJar.map((jar) => (
-            <option value={jar.id} key={jar.id}>
-              {jar.name} ({jar.currency})
-            </option>
-          ))}
-          {!isToJarEmpty && (
-            <>
-              <hr />
-              <optgroup label="Swap">
-                <option value={toJar.id} key={toJar.id}>
-                  {toJar.name} ({toJar.currency})
+          {accountsWithJars.map((account) => (
+            <optgroup key={account.id} label={account.name}>
+              {account.jarsWithBalance.map((jar) => (
+                <option key={jar.id} value={jar.id} disabled={!jar.balance}>
+                  {account.name}
+                  {' / '}
+                  {jar.name ? `${jar.name} (${jar.currency})` : jar.currency}
+                  {jar.id === toJarId && ' [toJar]'}
                 </option>
-              </optgroup>
-            </>
-          )}
-
-          {!!emptyJars.length && (
-            <>
-              <hr />
-              <optgroup label="Empty jars">
-                {emptyJars.map((jar) => (
-                  <option value={jar.id} key={jar.id} disabled>
-                    {jar.name} ({jar.currency})
-                  </option>
-                ))}
-              </optgroup>
-            </>
-          )}
+              ))}
+            </optgroup>
+          ))}
         </Select>
       </div>
 
@@ -276,27 +294,22 @@ function MovedTransactionForm({ jars }: { jars: Array<JarWithBalance> }) {
             setToJarId(newToJarId)
           }}
         >
-          {jarsWithoutFromJar.map((jar) => (
-            <option value={jar.id} key={jar.id}>
-              {jar.name} ({jar.currency})
-            </option>
-          ))}
-          {!!fromJar && (
-            <>
-              <hr />
-              <optgroup label="Swap">
+          {accountsWithJars.map((account) => (
+            <optgroup key={account.id} label={account.name}>
+              {account.jarsWithBalance.map((jar) => (
                 <option
-                  value={fromJar.id}
-                  key={fromJar.id}
-                  // Swapping jars should only be possible if the current toJar
-                  // has a non-empty balance
-                  disabled={isToJarEmpty}
+                  key={jar.id}
+                  value={jar.id}
+                  disabled={jar.id === fromJarId && !isJarSwapValid}
                 >
-                  {fromJar.name} ({fromJar.currency})
+                  {account.name}
+                  {' / '}
+                  {jar.name ? `${jar.name} (${jar.currency})` : jar.currency}
+                  {jar.id === fromJarId && ' [fromJar]'}
                 </option>
-              </optgroup>
-            </>
-          )}
+              ))}
+            </optgroup>
+          ))}
         </Select>
       </div>
 
