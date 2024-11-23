@@ -153,7 +153,7 @@ async function Transactions() {
                           )}
                           <p className="text-lg font-medium">
                             {transaction.amount / 100}{' '}
-                            <span className="text-base text-gray-500">
+                            <span className="text-base text-gray-400">
                               {transaction.jar.currency}
                             </span>
                           </p>
@@ -178,7 +178,7 @@ async function Transactions() {
                       <div className="flex flex-col items-end">
                         <p className="text-lg font-medium">
                           {Math.abs(transaction.amount / 100)}{' '}
-                          <span className="text-base text-gray-500">
+                          <span className="text-base text-gray-400">
                             {transaction.jar.currency}
                           </span>
                         </p>
@@ -210,7 +210,7 @@ async function Transactions() {
                           )}
                           <p className={twMerge('text-lg font-medium')}>
                             {transaction.amount / 100}{' '}
-                            <span className="text-base text-gray-500">
+                            <span className="text-base text-gray-400">
                               {transaction.jar.currency}
                             </span>
                           </p>
@@ -245,7 +245,7 @@ async function Transactions() {
                       <div className="flex flex-col items-end">
                         <p className="text-lg font-medium">
                           {Math.abs(transaction.toAmount / 100)}{' '}
-                          <span className="text-base text-gray-500">
+                          <span className="text-base text-gray-400">
                             {transaction.toJar.currency}
                           </span>
                         </p>
