@@ -54,7 +54,7 @@ async function Cards() {
       {!hasAccounts && (
         <p className="rounded-2xl border border-dashed border-gray-100 bg-gray-50 p-8 py-16 text-center text-gray-500">
           To start using Cards, you&apos;ll need to{' '}
-          <Link href="/" className="whitespace-nowrap underline">
+          <Link href="/accounts" className="whitespace-nowrap underline">
             create an account
           </Link>{' '}
           first.

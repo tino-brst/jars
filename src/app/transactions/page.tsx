@@ -276,8 +276,7 @@ async function Transactions() {
       {!hasJars && (
         <p className="rounded-2xl border border-dashed border-gray-100 bg-gray-50 p-8 py-16 text-center text-gray-500">
           To start using Transactions, you&apos;ll need to{' '}
-          {/* TODO update link /jars */}
-          <Link href="/" className="whitespace-nowrap underline">
+          <Link href="/jars" className="whitespace-nowrap underline">
             create a jar
           </Link>{' '}
           first.

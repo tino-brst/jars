@@ -5,7 +5,7 @@ import { Link } from '@/components/primitives/Link'
 // TODO add prop sorting to Prettier/ESLint
 // TODO update jar selectors to show account name
 
-async function Home() {
+async function Jars() {
   const accounts = await db.account.findMany({
     orderBy: {
       createdAt: 'desc',
@@ -62,7 +62,7 @@ async function Home() {
       {!hasAccounts && (
         <p className="rounded-2xl border border-dashed border-gray-100 bg-gray-50 p-8 py-16 text-center text-gray-500">
           To start using Jars, you&apos;ll need to{' '}
-          <Link href="/" className="whitespace-nowrap underline">
+          <Link href="/accounts" className="whitespace-nowrap underline">
             create an account
           </Link>{' '}
           first.
@@ -72,4 +72,4 @@ async function Home() {
   )
 }
 
-export default Home
+export default Jars
