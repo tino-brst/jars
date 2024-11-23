@@ -1,9 +1,5 @@
 import { db } from '@/lib/db'
-import { createJar } from '@/actions/jars'
-import { Select } from '@/components/primitives/Select'
-import { Input } from '@/components/primitives/Input'
-import { AddJarSubmitButton } from '@/components/AddJarSubmitButton'
-import { Currency } from '@prisma/client'
+import { NewJarForm } from '@/components/NewJarForm'
 
 // TODO add prop sorting to Prettier/ESLint
 // TODO update jar selectors to show account name
@@ -24,34 +20,7 @@ async function Home() {
     <main>
       <h1 className="mb-4 text-3xl font-bold">Jars</h1>
 
-      <form action={createJar} className="mb-6 flex flex-col gap-2">
-        <div className="flex flex-col gap-2">
-          <Select name="accountId" required>
-            {accounts.map((account) => (
-              <option key={account.id} value={account.id}>
-                {account.name}
-              </option>
-            ))}
-          </Select>
-          <div className="flex gap-2">
-            <Input required type="text" name="name" className="flex-1" />
-            <Select name="currency" defaultValue={Currency.USD} required>
-              <option value={Currency.USD}>USD</option>
-              <option value={Currency.ARS}>ARS</option>
-              <option value={Currency.EUR}>EUR</option>
-            </Select>
-          </div>
-          <Input
-            type="number"
-            name="initialBalance"
-            step="0.01"
-            min="0"
-            fallback="0"
-          />
-        </div>
-
-        <AddJarSubmitButton />
-      </form>
+      <NewJarForm accounts={accounts} />
 
       {hasJars && (
         <ol className="flex flex-col gap-2">
