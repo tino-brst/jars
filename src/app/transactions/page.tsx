@@ -13,6 +13,7 @@ import {
   SentTransaction,
   Jar,
   MovedTransaction,
+  Account,
 } from '@prisma/client'
 import React, { Fragment } from 'react'
 import { twMerge } from 'tailwind-merge'
@@ -20,24 +21,26 @@ import { PlusIcon } from '@/components/icons/PlusIcon'
 import { ArrowRightIcon } from '@/components/icons/ArrowRightIcon'
 import { Link } from '@/components/primitives/Link'
 
+type JarWithAccount = Omit<Jar, 'accountId'> & { account: Account }
+
 type Transaction = Omit<BaseTransaction, 'type'> &
   (
     | (Omit<InitTransaction, 'transactionId' | 'jarId'> & {
         type: typeof TransactionType.INIT
-        jar: Jar
+        jar: JarWithAccount
       })
     | (Omit<SentTransaction, 'transactionId' | 'jarId'> & {
         type: typeof TransactionType.SENT
-        jar: Jar
+        jar: JarWithAccount
       })
     | (Omit<ReceivedTransaction, 'transactionId' | 'jarId'> & {
         type: typeof TransactionType.RECEIVED
-        jar: Jar
+        jar: JarWithAccount
       })
     | (Omit<MovedTransaction, 'transactionId' | 'forJarId' | 'toJarId'> & {
         type: typeof TransactionType.MOVED
-        fromJar: Jar
-        toJar: Jar
+        fromJar: JarWithAccount
+        toJar: JarWithAccount
       })
   )
 
@@ -47,23 +50,43 @@ async function Transactions() {
       include: {
         initTransaction: {
           include: {
-            jar: true,
+            jar: {
+              include: {
+                account: true,
+              },
+            },
           },
         },
         sentTransaction: {
           include: {
-            jar: true,
+            jar: {
+              include: {
+                account: true,
+              },
+            },
           },
         },
         receivedTransaction: {
           include: {
-            jar: true,
+            jar: {
+              include: {
+                account: true,
+              },
+            },
           },
         },
         movedTransaction: {
           include: {
-            fromJar: true,
-            toJar: true,
+            fromJar: {
+              include: {
+                account: true,
+              },
+            },
+            toJar: {
+              include: {
+                account: true,
+              },
+            },
           },
         },
       },
@@ -140,7 +163,14 @@ async function Transactions() {
                         <div className="flex w-fit items-center justify-center rounded-full bg-gray-200 p-2">
                           <CoinsStacked03Icon size={20} />
                         </div>
-                        <p className="font-medium">{transaction.jar.name}</p>
+                        <div className="flex flex-col">
+                          <p className="font-medium">
+                            {transaction.jar.name ?? transaction.jar.currency}
+                          </p>
+                          <p className="text-xs font-medium text-gray-400">
+                            Jar added to {transaction.jar.account.name}
+                          </p>
+                        </div>
                       </div>
                       <div className="flex flex-col items-end">
                         <div className="flex items-baseline gap-1">
@@ -183,7 +213,9 @@ async function Transactions() {
                           </span>
                         </p>
                         <p className="text-xs font-medium text-gray-400">
-                          Sent from {transaction.jar.name}
+                          Sent from {transaction.jar.account.name}
+                          {' / '}
+                          {transaction.jar.name ?? transaction.jar.currency}
                         </p>
                       </div>
                     </li>
@@ -216,7 +248,9 @@ async function Transactions() {
                           </p>
                         </div>
                         <p className="text-xs font-medium text-gray-400">
-                          Added to {transaction.jar.name}
+                          Received to {transaction.jar.account.name}
+                          {' / '}
+                          {transaction.jar.name ?? transaction.jar.currency}
                         </p>
                       </div>
                     </li>
@@ -228,18 +262,30 @@ async function Transactions() {
                         <div className="flex w-fit items-center justify-center rounded-full bg-gray-200 p-2">
                           <SwitchHorizontal01Icon size={20} />
                         </div>
-                        <div className="flex items-center gap-1">
-                          <p className="font-medium">
-                            {transaction.fromJar.name}
-                          </p>
+                        <div className="flex items-center gap-2">
+                          <div className="flex flex-col">
+                            <p className="font-medium">
+                              {transaction.fromJar.name ??
+                                transaction.fromJar.currency}
+                            </p>
+                            <p className="text-xs font-medium text-gray-400">
+                              {transaction.fromJar.account.name}
+                            </p>
+                          </div>
                           <ArrowRightIcon
                             size={12}
                             strokeWidth={3}
                             className="text-gray-400"
                           />
-                          <p className="font-medium">
-                            {transaction.toJar.name}
-                          </p>
+                          <div className="flex flex-col">
+                            <p className="font-medium">
+                              {transaction.toJar.name ??
+                                transaction.toJar.currency}
+                            </p>
+                            <p className="text-xs font-medium text-gray-400">
+                              {transaction.toJar.account.name}
+                            </p>
+                          </div>
                         </div>
                       </div>
                       <div className="flex flex-col items-end">
