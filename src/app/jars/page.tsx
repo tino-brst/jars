@@ -27,12 +27,9 @@ async function Jars() {
           <NewJarForm accounts={accounts} />
 
           {hasJars && (
-            <ol className="flex flex-col gap-2">
+            <ol className="flex flex-col gap-4">
               {accounts.map((account) => (
-                <li
-                  key={account.id}
-                  className="flex flex-col gap-1 rounded-2xl border border-dashed p-2 pt-1"
-                >
+                <li key={account.id} className="flex flex-col gap-1">
                   <p className="pl-3 text-sm font-medium text-gray-400">
                     {account.name}
                   </p>

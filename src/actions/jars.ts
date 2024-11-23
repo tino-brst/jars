@@ -37,6 +37,9 @@ async function createJar(formData: FormData) {
   const isFirstAccountJarWithGivenCurrency =
     sameAccountJarsWithGivenCurrency.length === 0
 
+  // TODO if there is no name, use the currency as the name
+  // TODO update placeholder "name = ARS"
+
   await db.jar.create({
     data: {
       ...data,

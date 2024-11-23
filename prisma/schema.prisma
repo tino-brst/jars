@@ -18,6 +18,8 @@ datasource db {
 // TODO unique constraints to check that a given transaction ID only belongs to
 // one jar?
 
+// TODO should some things be readonly? i.e. a jar's currency
+
 model Account {
   id              String           @id @default(uuid()) @db.Uuid
   name            String
