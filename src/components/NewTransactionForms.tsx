@@ -63,7 +63,7 @@ function SentTransactionForm({ jars }: { jars: Array<JarWithBalance> }) {
   const nonEmptyJars = jars.filter((jar) => jar.balance > 0)
   const emptyJars = jars.filter((jar) => jar.balance === 0)
 
-  const [jarId, setJarId] = useState(nonEmptyJars[0].id ?? '')
+  const [jarId, setJarId] = useState(nonEmptyJars[0]?.id ?? '')
   const jar = jars.find((jar) => jar.id === jarId)
 
   return (
@@ -93,23 +93,24 @@ function SentTransactionForm({ jars }: { jars: Array<JarWithBalance> }) {
           value={jarId}
           onChange={(event) => setJarId(event.target.value)}
         >
+          <option value="" disabled>
+            jarId*
+          </option>
+          <hr />
           {nonEmptyJars.map((jar) => (
             <option value={jar.id} key={jar.id}>
               {jar.name} ({jar.currency})
             </option>
           ))}
-
+          <hr />
           {!!emptyJars.length && (
-            <>
-              <hr />
-              <optgroup label="Empty jars">
-                {emptyJars.map((jar) => (
-                  <option value={jar.id} key={jar.id} disabled>
-                    {jar.name} ({jar.currency})
-                  </option>
-                ))}
-              </optgroup>
-            </>
+            <optgroup label="Empty jars">
+              {emptyJars.map((jar) => (
+                <option value={jar.id} key={jar.id} disabled>
+                  {jar.name} ({jar.currency})
+                </option>
+              ))}
+            </optgroup>
           )}
         </Select>
       </div>
@@ -162,11 +163,11 @@ function MovedTransactionForm({ jars }: { jars: Array<JarWithBalance> }) {
   const nonEmptyJars = jars.filter((jar) => jar.balance > 0)
   const emptyJars = jars.filter((jar) => jar.balance === 0)
 
-  const [fromJarId, setFromJarId] = useState<string>(nonEmptyJars[0].id ?? '')
+  const [fromJarId, setFromJarId] = useState(nonEmptyJars[0]?.id ?? '')
   const fromJar = jars.find((jar) => jar.id === fromJarId)
   const jarsWithoutFromJar = jars.filter((jar) => jar.id !== fromJarId)
 
-  const [toJarId, setToJarId] = useState<string>(jarsWithoutFromJar[0].id ?? '')
+  const [toJarId, setToJarId] = useState(jarsWithoutFromJar[0]?.id ?? '')
   const toJar = jars.find((jar) => jar.id === toJarId)
   const nonEmptyJarsWithoutToJar = nonEmptyJars.filter(
     (jar) => jar.id !== toJarId,
@@ -202,21 +203,22 @@ function MovedTransactionForm({ jars }: { jars: Array<JarWithBalance> }) {
             setFromJarId(newFromJarId)
           }}
         >
+          <option value="" disabled>
+            fromJarId*
+          </option>
+          <hr />
           {nonEmptyJarsWithoutToJar.map((jar) => (
             <option value={jar.id} key={jar.id}>
               {jar.name} ({jar.currency})
             </option>
           ))}
-
+          <hr />
           {!isToJarEmpty && (
-            <>
-              <hr />
-              <optgroup label="Swap">
-                <option value={toJar.id} key={toJar.id}>
-                  {toJar.name} ({toJar.currency})
-                </option>
-              </optgroup>
-            </>
+            <optgroup label="Swap">
+              <option value={toJar.id} key={toJar.id}>
+                {toJar.name} ({toJar.currency})
+              </option>
+            </optgroup>
           )}
 
           {!!emptyJars.length && (
