@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Jar" ALTER COLUMN "name" DROP NOT NULL;

@@ -8,7 +8,10 @@ import { Currency } from '@prisma/client'
 
 const schema = z.object({
   accountId: z.string().uuid(),
-  name: z.string(),
+  name: z
+    .string()
+    .nullable()
+    .transform((value) => (value === '' ? null : value)),
   currency: z.nativeEnum(Currency),
   initialBalance: z.coerce
     .number()
@@ -36,9 +39,6 @@ async function createJar(formData: FormData) {
 
   const isFirstAccountJarWithGivenCurrency =
     sameAccountJarsWithGivenCurrency.length === 0
-
-  // TODO if there is no name, use the currency as the name
-  // TODO update placeholder "name = ARS"
 
   await db.jar.create({
     data: {

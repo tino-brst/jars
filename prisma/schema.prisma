@@ -29,11 +29,9 @@ model Account {
   updatedAt       DateTime         @updatedAt
 }
 
-// TODO ✋ make the name optional and use currency as fallback
-
 model Jar {
   id                   String                @id @default(uuid()) @db.Uuid
-  name                 String
+  name                 String?
   currency             Currency
   createdAt            DateTime              @default(now())
   updatedAt            DateTime              @updatedAt
@@ -145,7 +143,7 @@ view JarBalance {
 
 view JarWithBalance {
   id        String   @id @unique @db.Uuid
-  name      String
+  name      String?
   currency  Currency
   createdAt DateTime
   updatedAt DateTime
