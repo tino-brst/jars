@@ -5,6 +5,7 @@ SELECT
   j."createdAt",
   j."updatedAt",
   j."accountId",
+  j."isPrimary",
   COALESCE(b.balance, 0) AS balance
 FROM
   (

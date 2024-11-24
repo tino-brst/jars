@@ -172,4 +172,5 @@ view JarWithBalance {
   balance   Int
   accountId String   @db.Uuid
   account   Account  @relation(fields: [accountId], references: [id])
+  isPrimary Boolean
 }
