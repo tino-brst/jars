@@ -1,9 +1,17 @@
 SELECT
-  st."transactionId",
-  st."jarId",
-  st.amount
+  it."transactionId",
+  it."jarId",
+  it.amount
 FROM
-  "InitTransaction" st
+  "InitTransaction" it
+UNION
+ALL
+SELECT
+  dt."transactionId",
+  dt."jarId",
+  dt.amount
+FROM
+  "DebitTransaction" dt
 UNION
 ALL
 SELECT

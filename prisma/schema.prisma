@@ -147,10 +147,10 @@ model DebitTransaction {
   jarId         String      @db.Uuid
   jar           Jar         @relation(fields: [jarId], references: [id])
   amount        Int         @default(0)
-  description   String? // TODO make it required
+  // TODO make it required
+  description   String?
 }
 
-// TODO add DebitTransaction support 
 view JarBalanceUpdate {
   transactionId String @db.Uuid
   jarId         String @db.Uuid

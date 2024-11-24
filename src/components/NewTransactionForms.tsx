@@ -17,10 +17,10 @@ import { Account, Card, JarWithBalance, TransactionType } from '@prisma/client'
 // TODO clear inputs after submit (I think this already works?)
 // TODO stricter ts, array[number]: something | undefined
 
-// TODO ✋ probably the balance checks to enable transaction types don't make much
-// sense. Same for max={} on the inputs. What if I wanna add a transaction that
-// happened in the past? I should be able to do that, even if the jar is empty
-// now. It's useful to have the current balances on the inputs though.
+// TODO ✋ probably the balance checks to enable/disable transactions don't make
+// much sense. Same for max={} on the inputs. What if I wanna add a transaction
+// that happened in the past? I should be able to do that, even if the jar is
+// empty now. It's useful to have the current balances on the inputs though.
 
 type AccountWithJarsWithBalance = Account & {
   jarsWithBalance: Array<JarWithBalance>
