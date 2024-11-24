@@ -7,7 +7,7 @@ import { revalidatePath } from 'next/cache'
 import { CardIssuer, CardType } from '@prisma/client'
 
 const schema = z.object({
-  name: z.string(),
+  accountId: z.string().uuid(),
   issuer: z.nativeEnum(CardIssuer),
   type: z.nativeEnum(CardType),
   lastFourDigits: z

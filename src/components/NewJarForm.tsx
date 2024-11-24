@@ -17,7 +17,7 @@ function NewJarForm({ accounts }: { accounts: Array<Account> }) {
         </Select>
         <div className="flex gap-2">
           <Input type="text" name="name" className="flex-1" />
-          <Select name="currency" defaultValue={Currency.USD} required>
+          <Select name="currency" required>
             <option value={Currency.USD}>USD</option>
             <option value={Currency.ARS}>ARS</option>
             <option value={Currency.EUR}>EUR</option>
