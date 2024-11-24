@@ -14,12 +14,15 @@ import {
   Jar,
   MovedTransaction,
   Account,
+  DebitTransaction,
+  Card,
 } from '@prisma/client'
 import React, { Fragment } from 'react'
 import { twMerge } from 'tailwind-merge'
 import { PlusIcon } from '@/components/icons/PlusIcon'
 import { ArrowRightIcon } from '@/components/icons/ArrowRightIcon'
 import { Link } from '@/components/primitives/Link'
+import { CreditCardIcon } from '@/components/icons/CreditCardIcon'
 
 type JarWithAccount = Omit<Jar, 'accountId'> & { account: Account }
 
@@ -28,6 +31,11 @@ type Transaction = Omit<BaseTransaction, 'type'> &
     | (Omit<InitTransaction, 'transactionId' | 'jarId'> & {
         type: typeof TransactionType.INIT
         jar: JarWithAccount
+      })
+    | (Omit<DebitTransaction, 'transactionId' | 'jarId' | 'cardId'> & {
+        type: typeof TransactionType.DEBIT
+        jar: JarWithAccount
+        card: Card
       })
     | (Omit<SentTransaction, 'transactionId' | 'jarId'> & {
         type: typeof TransactionType.SENT
@@ -55,6 +63,16 @@ async function Transactions() {
                 account: true,
               },
             },
+          },
+        },
+        debitTransaction: {
+          include: {
+            jar: {
+              include: {
+                account: true,
+              },
+            },
+            card: true,
           },
         },
         sentTransaction: {
@@ -102,6 +120,14 @@ async function Transactions() {
           ...transaction.initTransaction,
           // For some reason, even if transaction.type is correctly typed here
           // ('INIT'), leaving it as part of ...transaction makes TS complain 🤷🏻‍♂️
+          type: transaction.type,
+        }
+      }
+
+      if (transaction.type === 'DEBIT' && transaction.debitTransaction) {
+        return {
+          ...transaction,
+          ...transaction.debitTransaction,
           type: transaction.type,
         }
       }
@@ -195,6 +221,29 @@ async function Transactions() {
                         </div>
                         <p className="text-xs font-medium text-gray-400">
                           Initial Balance
+                        </p>
+                      </div>
+                    </li>
+                  )}
+
+                  {transaction.type === 'DEBIT' && (
+                    <li className="flex min-h-16 items-center justify-between rounded-xl bg-gray-100 px-3 py-2">
+                      <div className="flex items-center gap-3">
+                        <div className="flex w-fit items-center justify-center rounded-full bg-gray-200 p-2">
+                          <CreditCardIcon size={20} />
+                        </div>
+                        <p className="font-medium">{transaction.description}</p>
+                      </div>
+                      <div className="flex flex-col items-end">
+                        <p className="text-lg font-medium">
+                          {Math.abs(transaction.amount / 100)}{' '}
+                          <span className="text-base text-gray-400">
+                            {transaction.jar.currency}
+                          </span>
+                        </p>
+                        <p className="text-xs font-medium text-gray-400">
+                          Spent from {transaction.jar.account.name} / ••••{' '}
+                          {transaction.card.lastFourDigits}
                         </p>
                       </div>
                     </li>
