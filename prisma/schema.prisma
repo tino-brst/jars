@@ -20,6 +20,9 @@ datasource db {
 
 // TODO should some things be readonly? i.e. a jar's currency
 
+// TODO is there a way to check that there is enough balance in a jar to perform
+// a transaction
+
 model Account {
   id              String           @id @default(uuid()) @db.Uuid
   name            String

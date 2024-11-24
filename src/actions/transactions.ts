@@ -4,6 +4,7 @@ import { z } from 'zod'
 
 import { db } from '@/lib/db'
 import { revalidatePath } from 'next/cache'
+import { Currency } from '@prisma/client'
 
 // TODO make revalidation more specific, not all of the things
 
@@ -150,8 +151,72 @@ async function createMovedTransaction(formData: FormData) {
   revalidatePath('/', 'layout')
 }
 
+const debitTransactionFormDataSchema = z.object({
+  cardId: z.string().uuid(),
+  description: z.string(),
+  currency: z.nativeEnum(Currency),
+  amount: z.coerce
+    .number()
+    .positive()
+    .step(0.01)
+    .transform((value) => value * 100),
+})
+
+async function createDebitTransaction(formData: FormData) {
+  const parse = debitTransactionFormDataSchema.safeParse(
+    Object.fromEntries(formData),
+  )
+
+  if (!parse.success) {
+    throw parse.error.issues
+  }
+
+  const card = await db.card.findUnique({
+    where: {
+      id: parse.data.cardId,
+    },
+    include: {
+      account: {
+        include: {
+          jars: true,
+        },
+      },
+    },
+  })
+
+  if (!card) {
+    throw 'Card not found'
+  }
+
+  const associatedAccount = card.account
+  const primaryJarForGivenCurrency = associatedAccount.jars
+    .filter((jar) => jar.isPrimary)
+    .find((jar) => jar.currency === parse.data.currency)
+
+  if (!primaryJarForGivenCurrency) {
+    throw 'Primary jar for given currency not found'
+  }
+
+  await db.transaction.create({
+    data: {
+      type: 'DEBIT',
+      debitTransaction: {
+        create: {
+          cardId: parse.data.cardId,
+          jarId: primaryJarForGivenCurrency.id,
+          description: parse.data.description,
+          amount: -parse.data.amount,
+        },
+      },
+    },
+  })
+
+  revalidatePath('/', 'layout')
+}
+
 export {
   createSentTransaction,
   createReceivedTransaction,
   createMovedTransaction,
+  createDebitTransaction,
 }
