@@ -6,20 +6,25 @@ import {
   createMovedTransaction,
   createSentTransaction,
   createReceivedTransaction,
+  createDebitTransaction,
 } from '@/actions/transactions'
 import { AddTransactionSubmitButton } from '@/components/AddTransactionSubmitButton'
 
 import { Input } from '@/components/primitives/Input'
 import { Select } from '@/components/primitives/Select'
-import { Account, JarWithBalance, TransactionType } from '@prisma/client'
+import { Account, Card, JarWithBalance, TransactionType } from '@prisma/client'
 
 // TODO clear inputs after submit (I think this already works?)
 // TODO stricter ts, array[number]: something | undefined
 
-// TODO ✋ card transaction form
+// TODO ✋ probably the balance checks to enable transaction types don't make much
+// sense. Same for max={} on the inputs. What if I wanna add a transaction that
+// happened in the past? I should be able to do that, even if the jar is empty
+// now. It's useful to have the current balances on the inputs though.
 
 type AccountWithJarsWithBalance = Account & {
   jarsWithBalance: Array<JarWithBalance>
+  cards: Array<Card>
 }
 
 function NewTransactionForms({
@@ -77,7 +82,9 @@ function NewTransactionForms({
         )}
       </Select>
 
-      {transactionType === 'DEBIT' && <DebitTransactionForm />}
+      {transactionType === 'DEBIT' && (
+        <DebitTransactionForm accounts={accounts} />
+      )}
 
       {transactionType === 'SENT' && (
         <SentTransactionForm accounts={accounts} />
@@ -94,11 +101,42 @@ function NewTransactionForms({
   )
 }
 
-function DebitTransactionForm() {
+function DebitTransactionForm({
+  accounts,
+}: {
+  accounts: Array<AccountWithJarsWithBalance>
+}) {
+  const cards = accounts.flatMap((account) => account.cards)
+
+  const [selectedCardId, setSelectedCardId] = useState<string>(cards[0].id)
+  const selectedCard = cards.find((card) => card.id === selectedCardId)
+
+  const associatedAccount = accounts.find(
+    (account) => account.id === selectedCard?.accountId,
+  )
+
+  const availableCurrencies =
+    associatedAccount?.jarsWithBalance
+      .filter((jar) => jar.isPrimary)
+      .map((jar) => jar.currency) ?? []
+
   return (
-    <form className="flex flex-col gap-2">
-      <Select required name="cardId">
-        <option>Wise / •••• 1234</option>
+    <form className="flex flex-col gap-2" action={createDebitTransaction}>
+      <Select
+        required
+        name="cardId"
+        value={selectedCardId}
+        onChange={(event) => setSelectedCardId(event.target.value)}
+      >
+        {accounts.map((account) => (
+          <optgroup key={account.id} label={account.name}>
+            {account.cards.map((card) => (
+              <option key={card.id} value={card.id}>
+                {account.name} / •••• {card.lastFourDigits}
+              </option>
+            ))}
+          </optgroup>
+        ))}
       </Select>
       <Input required type="text" name="description" />
       <div className="flex items-center gap-2">
@@ -108,14 +146,14 @@ function DebitTransactionForm() {
           name="amount"
           step="0.01"
           min="0.01"
-          // TODO max={}
           className="flex-1"
         />
         <Select required name="currency" className="flex-1">
-          {/* TODO dynamic based on primary jars of the card's account */}
-          <option value="USD">USD</option>
-          <option value="ARS">ARS</option>
-          <option value="EUR">EUR</option>
+          {availableCurrencies.map((currency) => (
+            <option key={currency} value={currency}>
+              {currency}
+            </option>
+          ))}
         </Select>
       </div>
 

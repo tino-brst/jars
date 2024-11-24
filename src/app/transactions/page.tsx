@@ -143,6 +143,7 @@ async function Transactions() {
     },
     include: {
       jarsWithBalance: true,
+      cards: true,
     },
   })
 

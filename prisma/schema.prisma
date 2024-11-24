@@ -150,6 +150,7 @@ model DebitTransaction {
   description   String? // TODO make it required
 }
 
+// TODO add DebitTransaction support 
 view JarBalanceUpdate {
   transactionId String @db.Uuid
   jarId         String @db.Uuid
