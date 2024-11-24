@@ -40,10 +40,12 @@ model Jar {
   account              Account               @relation(fields: [accountId], references: [id])
   isPrimary            Boolean               @default(false)
   initTransaction      InitTransaction?
+  // TODO rename (plural, e.g. sentTransactions)
   sentTransaction      SentTransaction[]
   receivedTransaction  ReceivedTransaction[]
   movedFromTransaction MovedTransaction[]    @relation("movedFromTransaction")
   movedToTransaction   MovedTransaction[]    @relation("movedToTransaction")
+  debitTransaction     DebitTransaction[]
 }
 
 enum Currency {
@@ -53,14 +55,15 @@ enum Currency {
 }
 
 model Card {
-  id             String     @id @default(uuid()) @db.Uuid
-  accountId      String     @db.Uuid
-  account        Account    @relation(fields: [accountId], references: [id])
-  type           CardType
-  issuer         CardIssuer
-  lastFourDigits String
-  createdAt      DateTime   @default(now())
-  updatedAt      DateTime   @updatedAt
+  id                String             @id @default(uuid()) @db.Uuid
+  accountId         String             @db.Uuid
+  account           Account            @relation(fields: [accountId], references: [id])
+  type              CardType
+  issuer            CardIssuer
+  lastFourDigits    String
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  debitTransactions DebitTransaction[]
 }
 
 enum CardType {
@@ -82,6 +85,7 @@ model Transaction {
   sentTransaction     SentTransaction?
   receivedTransaction ReceivedTransaction?
   movedTransaction    MovedTransaction?
+  debitTransaction    DebitTransaction?
 }
 
 enum TransactionType {
@@ -89,6 +93,7 @@ enum TransactionType {
   SENT
   RECEIVED
   MOVED
+  DEBIT
 }
 
 model InitTransaction {
@@ -128,6 +133,17 @@ model MovedTransaction {
   toAmount       Int         @default(0)
   fees           Int         @default(0)
   conversionRate Float       @default(1)
+}
+
+model DebitTransaction {
+  transactionId String      @id @unique @db.Uuid
+  transaction   Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  cardId        String      @db.Uuid
+  card          Card        @relation(fields: [cardId], references: [id])
+  jarId         String      @db.Uuid
+  jar           Jar         @relation(fields: [jarId], references: [id])
+  amount        Int         @default(0)
+  description   String? // TODO non-empty string or null check
 }
 
 view JarBalanceUpdate {
