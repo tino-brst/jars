@@ -27,6 +27,7 @@ model Account {
   jarsWithBalance JarWithBalance[]
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
+  cards           Card[]
 }
 
 model Jar {
@@ -53,6 +54,8 @@ enum Currency {
 
 model Card {
   id             String     @id @default(uuid()) @db.Uuid
+  accountId      String     @db.Uuid
+  account        Account    @relation(fields: [accountId], references: [id])
   type           CardType
   issuer         CardIssuer
   lastFourDigits String
