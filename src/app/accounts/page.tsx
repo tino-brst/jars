@@ -47,7 +47,7 @@ async function Accounts() {
               <p className="font-medium">{account.name}</p>
               {!account.jars.length && (
                 <p className="text-sm font-medium text-gray-400">
-                  No jars on this account yet
+                  No jars on this account
                 </p>
               )}
 
