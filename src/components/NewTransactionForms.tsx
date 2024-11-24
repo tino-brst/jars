@@ -32,7 +32,7 @@ function NewTransactionForms({
   const hasMoreThanOneJar = jars.length > 1
 
   const [transactionType, setTransactionType] = useState<TransactionType>(
-    hasNonEmptyJars ? TransactionType.SENT : TransactionType.RECEIVED,
+    TransactionType.DEBIT,
   )
 
   return (
@@ -43,6 +43,7 @@ function NewTransactionForms({
           setTransactionType(event.target.value as TransactionType)
         }
       >
+        <option value={TransactionType.DEBIT}>Debit</option>
         {hasNonEmptyJars && (
           <>
             <option value={TransactionType.SENT}>Sent</option>
@@ -76,6 +77,8 @@ function NewTransactionForms({
         )}
       </Select>
 
+      {transactionType === 'DEBIT' && <DebitTransactionForm />}
+
       {transactionType === 'SENT' && (
         <SentTransactionForm accounts={accounts} />
       )}
@@ -88,6 +91,36 @@ function NewTransactionForms({
         <MovedTransactionForm accounts={accounts} />
       )}
     </div>
+  )
+}
+
+function DebitTransactionForm() {
+  return (
+    <form className="flex flex-col gap-2">
+      <Select required name="cardId">
+        <option>Wise / •••• 1234</option>
+      </Select>
+      <Input required type="text" name="description" />
+      <div className="flex items-center gap-2">
+        <Input
+          required
+          type="number"
+          name="amount"
+          step="0.01"
+          min="0.01"
+          // TODO max={}
+          className="flex-1"
+        />
+        <Select required name="currency" className="flex-1">
+          {/* TODO dynamic based on primary jars of the card's account */}
+          <option value="USD">USD</option>
+          <option value="ARS">ARS</option>
+          <option value="EUR">EUR</option>
+        </Select>
+      </div>
+
+      <AddTransactionSubmitButton />
+    </form>
   )
 }
 

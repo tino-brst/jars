@@ -21,7 +21,8 @@ datasource db {
 // TODO should some things be readonly? i.e. a jar's currency
 
 // TODO is there a way to check that there is enough balance in a jar to perform
-// a transaction
+// a transaction. I don't think it makes sense though, since if I'm registering
+// the transaction is because it already happened
 
 model Account {
   id              String           @id @default(uuid()) @db.Uuid
@@ -146,7 +147,7 @@ model DebitTransaction {
   jarId         String      @db.Uuid
   jar           Jar         @relation(fields: [jarId], references: [id])
   amount        Int         @default(0)
-  description   String? // TODO non-empty string or null check
+  description   String? // TODO make it required
 }
 
 view JarBalanceUpdate {
