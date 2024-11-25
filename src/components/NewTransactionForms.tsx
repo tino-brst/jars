@@ -13,6 +13,7 @@ import { AddTransactionSubmitButton } from '@/components/AddTransactionSubmitBut
 import { Input } from '@/components/primitives/Input'
 import { Select } from '@/components/primitives/Select'
 import { Account, Card, JarWithBalance, TransactionType } from '@prisma/client'
+import { FormContainer } from './FormContainer'
 
 // TODO clear inputs after submit (I think this already works?)
 // TODO stricter ts, array[number]: something | undefined
@@ -21,6 +22,8 @@ import { Account, Card, JarWithBalance, TransactionType } from '@prisma/client'
 // much sense. Same for max={} on the inputs. What if I wanna add a transaction
 // that happened in the past? I should be able to do that, even if the jar is
 // empty now. It's useful to have the current balances on the inputs though.
+// WAIT, maybe I can keep the check for max values, unless it has Custom Date
+// enabled, in which case the max restriction is removed
 
 type AccountWithJarsWithBalance = Account & {
   jarsWithBalance: Array<JarWithBalance>
@@ -41,63 +44,65 @@ function NewTransactionForms({
   )
 
   return (
-    <div className="mb-6 flex flex-col gap-2">
-      <Select
-        value={transactionType}
-        onChange={(event) =>
-          setTransactionType(event.target.value as TransactionType)
-        }
-      >
-        <option value={TransactionType.DEBIT}>Debit</option>
-        {hasNonEmptyJars && (
-          <>
-            <option value={TransactionType.SENT}>Sent</option>
-            <option value={TransactionType.RECEIVED}>Received</option>
-            {hasMoreThanOneJar && (
-              <option value={TransactionType.MOVED}>Moved</option>
-            )}
-            {!hasMoreThanOneJar && (
-              <optgroup label="Not enough jars">
+    <FormContainer title="New Transaction">
+      <div className="flex flex-col gap-2">
+        <Select
+          value={transactionType}
+          onChange={(event) =>
+            setTransactionType(event.target.value as TransactionType)
+          }
+        >
+          <option value={TransactionType.DEBIT}>Debit</option>
+          {hasNonEmptyJars && (
+            <>
+              <option value={TransactionType.SENT}>Sent</option>
+              <option value={TransactionType.RECEIVED}>Received</option>
+              {hasMoreThanOneJar && (
+                <option value={TransactionType.MOVED}>Moved</option>
+              )}
+              {!hasMoreThanOneJar && (
+                <optgroup label="Not enough jars">
+                  <option value={TransactionType.MOVED} disabled>
+                    Moved
+                  </option>
+                </optgroup>
+              )}
+            </>
+          )}
+
+          {!hasNonEmptyJars && (
+            <>
+              <option value={TransactionType.RECEIVED}>Received</option>
+              <hr />
+              <optgroup label="Not enough balance">
+                <option value={TransactionType.SENT} disabled>
+                  Sent
+                </option>
                 <option value={TransactionType.MOVED} disabled>
                   Moved
                 </option>
               </optgroup>
-            )}
-          </>
+            </>
+          )}
+        </Select>
+
+        {transactionType === 'DEBIT' && (
+          <DebitTransactionForm accounts={accounts} />
         )}
 
-        {!hasNonEmptyJars && (
-          <>
-            <option value={TransactionType.RECEIVED}>Received</option>
-            <hr />
-            <optgroup label="Not enough balance">
-              <option value={TransactionType.SENT} disabled>
-                Sent
-              </option>
-              <option value={TransactionType.MOVED} disabled>
-                Moved
-              </option>
-            </optgroup>
-          </>
+        {transactionType === 'SENT' && (
+          <SentTransactionForm accounts={accounts} />
         )}
-      </Select>
 
-      {transactionType === 'DEBIT' && (
-        <DebitTransactionForm accounts={accounts} />
-      )}
+        {transactionType === 'RECEIVED' && (
+          <ReceivedTransactionForm accounts={accounts} />
+        )}
 
-      {transactionType === 'SENT' && (
-        <SentTransactionForm accounts={accounts} />
-      )}
-
-      {transactionType === 'RECEIVED' && (
-        <ReceivedTransactionForm accounts={accounts} />
-      )}
-
-      {transactionType === 'MOVED' && (
-        <MovedTransactionForm accounts={accounts} />
-      )}
-    </div>
+        {transactionType === 'MOVED' && (
+          <MovedTransactionForm accounts={accounts} />
+        )}
+      </div>
+    </FormContainer>
   )
 }
 
