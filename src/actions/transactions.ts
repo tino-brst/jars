@@ -151,7 +151,7 @@ async function createMovedTransaction(formData: FormData) {
   revalidatePath('/', 'layout')
 }
 
-const debitTransactionFormDataSchema = z.object({
+const debitCardTransactionFormDataSchema = z.object({
   cardId: z.string().uuid(),
   description: z.string(),
   currency: z.nativeEnum(Currency),
@@ -162,8 +162,8 @@ const debitTransactionFormDataSchema = z.object({
     .transform((value) => value * 100),
 })
 
-async function createDebitTransaction(formData: FormData) {
-  const parse = debitTransactionFormDataSchema.safeParse(
+async function createDebitCardTransaction(formData: FormData) {
+  const parse = debitCardTransactionFormDataSchema.safeParse(
     Object.fromEntries(formData),
   )
 
@@ -218,5 +218,5 @@ export {
   createSentTransaction,
   createReceivedTransaction,
   createMovedTransaction,
-  createDebitTransaction,
+  createDebitCardTransaction,
 }

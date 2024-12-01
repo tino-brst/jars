@@ -6,7 +6,7 @@ import {
   createMovedTransaction,
   createSentTransaction,
   createReceivedTransaction,
-  createDebitTransaction,
+  createDebitCardTransaction,
 } from '@/actions/transactions'
 import { AddTransactionSubmitButton } from '@/components/AddTransactionSubmitButton'
 
@@ -52,7 +52,7 @@ function NewTransactionForms({
             setTransactionType(event.target.value as TransactionType)
           }
         >
-          <option value={TransactionType.DEBIT_CARD}>Debit</option>
+          <option value={TransactionType.DEBIT_CARD}>Debit Card</option>
           {hasNonEmptyJars && (
             <>
               <option value={TransactionType.SENT}>Sent</option>
@@ -87,7 +87,7 @@ function NewTransactionForms({
         </Select>
 
         {transactionType === 'DEBIT_CARD' && (
-          <DebitTransactionForm accounts={accounts} />
+          <DebitCardTransactionForm accounts={accounts} />
         )}
 
         {transactionType === 'SENT' && (
@@ -106,7 +106,7 @@ function NewTransactionForms({
   )
 }
 
-function DebitTransactionForm({
+function DebitCardTransactionForm({
   accounts,
 }: {
   accounts: Array<AccountWithJarsWithBalance>
@@ -126,7 +126,7 @@ function DebitTransactionForm({
       .map((jar) => jar.currency) ?? []
 
   return (
-    <form className="flex flex-col gap-2" action={createDebitTransaction}>
+    <form className="flex flex-col gap-2" action={createDebitCardTransaction}>
       <Select
         required
         name="cardId"
