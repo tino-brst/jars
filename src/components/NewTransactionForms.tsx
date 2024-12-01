@@ -25,17 +25,15 @@ import { FormContainer } from './FormContainer'
 // WAIT, maybe I can keep the check for max values, unless it has Custom Date
 // enabled, in which case the max restriction is removed
 
-type AccountWithJarsWithBalance = Account & {
-  jarsWithBalance: Array<JarWithBalance>
-  cards: Array<Card>
-}
-
 function NewTransactionForms({
   accounts,
+  jars,
+  cards,
 }: {
-  accounts: Array<AccountWithJarsWithBalance>
+  accounts: Array<Account>
+  jars: Array<JarWithBalance>
+  cards: Array<Card>
 }) {
-  const jars = accounts.flatMap((account) => account.jarsWithBalance)
   const hasNonEmptyJars = jars.some((jar) => jar.balance > 0)
   const hasMoreThanOneJar = jars.length > 1
 
@@ -87,19 +85,23 @@ function NewTransactionForms({
         </Select>
 
         {transactionType === 'DEBIT_CARD' && (
-          <DebitCardTransactionForm accounts={accounts} />
+          <DebitCardTransactionForm
+            accounts={accounts}
+            jars={jars}
+            cards={cards}
+          />
         )}
 
         {transactionType === 'SENT' && (
-          <SentTransactionForm accounts={accounts} />
+          <SentTransactionForm accounts={accounts} jars={jars} />
         )}
 
         {transactionType === 'RECEIVED' && (
-          <ReceivedTransactionForm accounts={accounts} />
+          <ReceivedTransactionForm accounts={accounts} jars={jars} />
         )}
 
         {transactionType === 'MOVED' && (
-          <MovedTransactionForm accounts={accounts} />
+          <MovedTransactionForm accounts={accounts} jars={jars} />
         )}
       </div>
     </FormContainer>
@@ -108,22 +110,28 @@ function NewTransactionForms({
 
 function DebitCardTransactionForm({
   accounts,
+  jars,
+  cards,
 }: {
-  accounts: Array<AccountWithJarsWithBalance>
+  accounts: Array<Account>
+  jars: Array<JarWithBalance>
+  cards: Array<Card>
 }) {
-  const cards = accounts.flatMap((account) => account.cards)
-
   const [selectedCardId, setSelectedCardId] = useState<string>(cards[0].id)
   const selectedCard = cards.find((card) => card.id === selectedCardId)
 
-  const associatedAccount = accounts.find(
-    (account) => account.id === selectedCard?.accountId,
-  )
-
   const availableCurrencies =
-    associatedAccount?.jarsWithBalance
+    jars
+      .filter((jar) => jar.accountId === selectedCard?.accountId)
       .filter((jar) => jar.isPrimary)
       .map((jar) => jar.currency) ?? []
+
+  const accountsWithCards = accounts
+    .map((account) => ({
+      ...account,
+      cards: cards.filter((card) => card.accountId === account.id),
+    }))
+    .filter((account) => account.cards.length > 0)
 
   return (
     <form className="flex flex-col gap-2" action={createDebitCardTransaction}>
@@ -133,7 +141,7 @@ function DebitCardTransactionForm({
         value={selectedCardId}
         onChange={(event) => setSelectedCardId(event.target.value)}
       >
-        {accounts.map((account) => (
+        {accountsWithCards.map((account) => (
           <optgroup key={account.id} label={account.name}>
             {account.cards.map((card) => (
               <option key={card.id} value={card.id}>
@@ -169,17 +177,21 @@ function DebitCardTransactionForm({
 
 function SentTransactionForm({
   accounts,
+  jars,
 }: {
-  accounts: Array<AccountWithJarsWithBalance>
+  accounts: Array<Account>
+  jars: Array<JarWithBalance>
 }) {
-  const accountsWithJars = accounts.filter(
-    (account) => account.jarsWithBalance.length > 0,
-  )
-
-  const jars = accounts.flatMap((account) => account.jarsWithBalance)
   const firstNonEmptyJar = jars.find((jar) => jar.balance > 0)
   const [jarId, setJarId] = useState(firstNonEmptyJar?.id)
   const jar = jars.find((jar) => jar.id === jarId)
+
+  const accountsWithJars = accounts
+    .map((account) => ({
+      ...account,
+      jars: jars.filter((jar) => jar.accountId === account.id),
+    }))
+    .filter((account) => account.jars.length > 0)
 
   return (
     <form className="flex flex-col gap-2" action={createSentTransaction}>
@@ -211,7 +223,7 @@ function SentTransactionForm({
         >
           {accountsWithJars.map((account) => (
             <optgroup key={account.id} label={account.name}>
-              {account.jarsWithBalance.map((jar) => (
+              {account.jars.map((jar) => (
                 <option key={jar.id} value={jar.id} disabled={!jar.balance}>
                   {account.name}
                   {' / '}
@@ -230,12 +242,17 @@ function SentTransactionForm({
 
 function ReceivedTransactionForm({
   accounts,
+  jars,
 }: {
-  accounts: Array<AccountWithJarsWithBalance>
+  accounts: Array<Account>
+  jars: Array<JarWithBalance>
 }) {
-  const accountsWithJars = accounts.filter(
-    (account) => account.jarsWithBalance.length > 0,
-  )
+  const accountsWithJars = accounts
+    .map((account) => ({
+      ...account,
+      jars: jars.filter((jar) => jar.accountId === account.id),
+    }))
+    .filter((account) => account.jars.length > 0)
 
   return (
     <form className="flex flex-col gap-2" action={createReceivedTransaction}>
@@ -260,7 +277,7 @@ function ReceivedTransactionForm({
         <Select required name="jarId" className="flex-1">
           {accountsWithJars.map((account) => (
             <optgroup key={account.id} label={account.name}>
-              {account.jarsWithBalance.map((jar) => (
+              {account.jars.map((jar) => (
                 <option key={jar.id} value={jar.id}>
                   {account.name}
                   {' / '}
@@ -279,19 +296,22 @@ function ReceivedTransactionForm({
 
 function MovedTransactionForm({
   accounts,
+  jars,
 }: {
-  accounts: Array<AccountWithJarsWithBalance>
+  accounts: Array<Account>
+  jars: Array<JarWithBalance>
 }) {
   // TODO 🐛 if the transaction empties the source jar, the form is reset after
   // submission but the from & to selects are set to the same jar. Actually,
   // looks like any transactions resets the selects to the first jar (even if
   // disabled)
 
-  const accountsWithJars = accounts.filter(
-    (account) => account.jarsWithBalance.length > 0,
-  )
-
-  const jars = accounts.flatMap((account) => account.jarsWithBalance)
+  const accountsWithJars = accounts
+    .map((account) => ({
+      ...account,
+      jars: jars.filter((jar) => jar.accountId === account.id),
+    }))
+    .filter((account) => account.jars.length > 0)
 
   const firstNonEmptyJar = jars.find((jar) => jar.balance > 0)
   const [fromJarId, setFromJarId] = useState(firstNonEmptyJar?.id)
@@ -333,7 +353,7 @@ function MovedTransactionForm({
         >
           {accountsWithJars.map((account) => (
             <optgroup key={account.id} label={account.name}>
-              {account.jarsWithBalance.map((jar) => (
+              {account.jars.map((jar) => (
                 <option key={jar.id} value={jar.id} disabled={!jar.balance}>
                   {account.name}
                   {' / '}
@@ -373,7 +393,7 @@ function MovedTransactionForm({
         >
           {accountsWithJars.map((account) => (
             <optgroup key={account.id} label={account.name}>
-              {account.jarsWithBalance.map((jar) => (
+              {account.jars.map((jar) => (
                 <option
                   key={jar.id}
                   value={jar.id}

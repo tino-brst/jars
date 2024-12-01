@@ -166,15 +166,8 @@ async function Transactions() {
     .filter((transaction): transaction is Transaction => transaction !== null)
 
   const jars = await db.jarWithBalance.findMany()
-  const accounts = await db.account.findMany({
-    orderBy: {
-      name: 'asc',
-    },
-    include: {
-      jarsWithBalance: true,
-      cards: true,
-    },
-  })
+  const accounts = await db.account.findMany()
+  const cards = await db.card.findMany()
 
   const hasJars = jars.length > 0
   const hasTransactions = transactions.length > 0
@@ -185,7 +178,7 @@ async function Transactions() {
 
       {hasJars && (
         <>
-          <NewTransactionForms accounts={accounts} />
+          <NewTransactionForms jars={jars} accounts={accounts} cards={cards} />
 
           {hasTransactions && (
             <ol className="flex flex-col gap-2">
