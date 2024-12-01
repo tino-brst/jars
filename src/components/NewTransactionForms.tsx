@@ -37,6 +37,9 @@ function NewTransactionForms({
   const debitCards = cards.filter((card) => card.type === 'DEBIT')
   const hasDebitCards = !!debitCards.length
 
+  const creditCards = cards.filter((card) => card.type === 'CREDIT')
+  const hasCreditCards = !!creditCards.length
+
   const hasNonEmptyJars = jars.some((jar) => jar.balance > 0)
   const hasMoreThanOneJar = jars.length > 1
 
@@ -55,6 +58,10 @@ function NewTransactionForms({
         >
           {hasDebitCards && (
             <option value={TransactionType.DEBIT_CARD}>Debit Card</option>
+          )}
+
+          {hasCreditCards && (
+            <option value={TransactionType.CREDIT_CARD}>Credit Card</option>
           )}
 
           {hasNonEmptyJars && (
@@ -96,6 +103,14 @@ function NewTransactionForms({
               </option>
             </optgroup>
           )}
+
+          {!hasCreditCards && (
+            <optgroup label="No credit cards">
+              <option value={TransactionType.CREDIT_CARD} disabled>
+                Credit Card
+              </option>
+            </optgroup>
+          )}
         </Select>
 
         {transactionType === 'DEBIT_CARD' && (
@@ -103,6 +118,14 @@ function NewTransactionForms({
             accounts={accounts}
             jars={jars}
             cards={debitCards}
+          />
+        )}
+
+        {transactionType === 'CREDIT_CARD' && (
+          <CreditCardTransactionForm
+            accounts={accounts}
+            jars={jars}
+            cards={creditCards}
           />
         )}
 
@@ -183,6 +206,78 @@ function DebitCardTransactionForm({
           ))}
         </Select>
       </div>
+
+      <AddTransactionSubmitButton />
+    </form>
+  )
+}
+
+function CreditCardTransactionForm({
+  accounts,
+  jars,
+  cards,
+}: {
+  accounts: Array<Account>
+  jars: Array<JarWithBalance>
+  cards: Array<Card>
+}) {
+  const [selectedCardId, setSelectedCardId] = useState<string>(cards[0].id)
+  const selectedCard = cards.find((card) => card.id === selectedCardId)
+
+  const availableCurrencies =
+    jars
+      .filter((jar) => jar.accountId === selectedCard?.accountId)
+      .filter((jar) => jar.isPrimary)
+      .map((jar) => jar.currency) ?? []
+
+  const accountsWithCards = accounts
+    .map((account) => ({
+      ...account,
+      cards: cards.filter((card) => card.accountId === account.id),
+    }))
+    .filter((account) => account.cards.length > 0)
+
+  return (
+    <form
+      className="flex flex-col gap-2"
+      // TODO
+      action={undefined}
+    >
+      <Select
+        required
+        name="cardId"
+        value={selectedCardId}
+        onChange={(event) => setSelectedCardId(event.target.value)}
+      >
+        {accountsWithCards.map((account) => (
+          <optgroup key={account.id} label={account.name}>
+            {account.cards.map((card) => (
+              <option key={card.id} value={card.id}>
+                {account.name} / •••• {card.lastFourDigits}
+              </option>
+            ))}
+          </optgroup>
+        ))}
+      </Select>
+      <Input required type="text" name="description" />
+      <div className="flex items-center gap-2">
+        <Input
+          required
+          type="number"
+          name="amount"
+          step="0.01"
+          min="0.01"
+          className="flex-1"
+        />
+        <Select required name="currency" className="flex-1">
+          {availableCurrencies.map((currency) => (
+            <option key={currency} value={currency}>
+              {currency}
+            </option>
+          ))}
+        </Select>
+      </div>
+      {/* TODO installments/subscription tab */}
 
       <AddTransactionSubmitButton />
     </form>
