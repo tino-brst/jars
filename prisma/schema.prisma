@@ -210,6 +210,8 @@ model CreditCardTransaction {
   jar                    Jar?                          @relation(fields: [jarId], references: [id])
   amount                 Int?
   conversionRate         Float?
+
+  @@unique([cardId, usageId, installmentNumber])
 }
 
 model CreditCardSettledTransaction {
