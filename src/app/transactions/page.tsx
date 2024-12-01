@@ -33,7 +33,7 @@ type Transaction = Omit<BaseTransaction, 'type'> &
         jar: JarWithAccount
       })
     | (Omit<DebitTransaction, 'transactionId' | 'jarId' | 'cardId'> & {
-        type: typeof TransactionType.DEBIT
+        type: typeof TransactionType.DEBIT_CARD
         jar: JarWithAccount
         card: Card
       })
@@ -124,7 +124,7 @@ async function Transactions() {
         }
       }
 
-      if (transaction.type === 'DEBIT' && transaction.debitTransaction) {
+      if (transaction.type === 'DEBIT_CARD' && transaction.debitTransaction) {
         return {
           ...transaction,
           ...transaction.debitTransaction,
@@ -226,7 +226,7 @@ async function Transactions() {
                     </li>
                   )}
 
-                  {transaction.type === 'DEBIT' && (
+                  {transaction.type === 'DEBIT_CARD' && (
                     <li className="flex min-h-16 items-center justify-between rounded-xl bg-gray-100 px-3 py-2">
                       <div className="flex items-center gap-3">
                         <div className="flex w-fit items-center justify-center rounded-full bg-gray-200 p-2">

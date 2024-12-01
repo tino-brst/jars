@@ -97,7 +97,7 @@ enum TransactionType {
   SENT
   RECEIVED
   MOVED
-  DEBIT
+  DEBIT_CARD
 }
 
 model InitTransaction {

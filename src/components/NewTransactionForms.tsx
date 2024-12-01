@@ -40,7 +40,7 @@ function NewTransactionForms({
   const hasMoreThanOneJar = jars.length > 1
 
   const [transactionType, setTransactionType] = useState<TransactionType>(
-    TransactionType.DEBIT,
+    TransactionType.DEBIT_CARD,
   )
 
   return (
@@ -52,7 +52,7 @@ function NewTransactionForms({
             setTransactionType(event.target.value as TransactionType)
           }
         >
-          <option value={TransactionType.DEBIT}>Debit</option>
+          <option value={TransactionType.DEBIT_CARD}>Debit</option>
           {hasNonEmptyJars && (
             <>
               <option value={TransactionType.SENT}>Sent</option>
@@ -86,7 +86,7 @@ function NewTransactionForms({
           )}
         </Select>
 
-        {transactionType === 'DEBIT' && (
+        {transactionType === 'DEBIT_CARD' && (
           <DebitTransactionForm accounts={accounts} />
         )}
 
