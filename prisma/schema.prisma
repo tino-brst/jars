@@ -191,11 +191,9 @@ model DebitCardTransaction {
   jarId         String      @db.Uuid
   jar           Jar         @relation(fields: [jarId], references: [id])
   amount        Int         @default(0)
-  // TODO make it required
-  description   String?
+  description   String
 }
 
-// TODO makes sense to have amount as foreign key to the usage?
 model CreditCardTransaction {
   transactionId          String                        @id @unique @db.Uuid
   transaction            Transaction                   @relation(fields: [transactionId], references: [id], onDelete: Cascade)
