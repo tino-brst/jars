@@ -63,6 +63,8 @@ async function Accounts() {
                   ))}
                 </ul>
               )}
+
+              {/* TODO ✋ primary jar selection? */}
             </li>
           ))}
         </ol>

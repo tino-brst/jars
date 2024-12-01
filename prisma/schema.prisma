@@ -34,22 +34,28 @@ model Account {
   cards           Card[]
 }
 
+// TODO on delete of jars, handle the possibility of deleting the primary jar.
+// Whenever deleting one a new primary should be picked (if there are other
+// jars). deleteJar(id, newPrimaryJarId)
+
 model Jar {
-  id                   String                @id @default(uuid()) @db.Uuid
-  name                 String?
-  currency             Currency
-  createdAt            DateTime              @default(now())
-  updatedAt            DateTime              @updatedAt
-  accountId            String                @db.Uuid
-  account              Account               @relation(fields: [accountId], references: [id])
-  isPrimary            Boolean               @default(false)
-  initTransaction      InitTransaction?
+  id                       String                         @id @default(uuid()) @db.Uuid
+  name                     String?
+  currency                 Currency
+  createdAt                DateTime                       @default(now())
+  updatedAt                DateTime                       @updatedAt
+  accountId                String                         @db.Uuid
+  account                  Account                        @relation(fields: [accountId], references: [id])
+  isPrimary                Boolean                        @default(false)
+  initTransaction          InitTransaction?
   // TODO rename (plural, e.g. sentTransactions)
-  sentTransaction      SentTransaction[]
-  receivedTransaction  ReceivedTransaction[]
-  movedFromTransaction MovedTransaction[]    @relation("movedFromTransaction")
-  movedToTransaction   MovedTransaction[]    @relation("movedToTransaction")
-  debitTransaction     DebitTransaction[]
+  sentTransaction          SentTransaction[]
+  receivedTransaction      ReceivedTransaction[]
+  movedFromTransaction     MovedTransaction[]             @relation("movedFromTransaction")
+  movedToTransaction       MovedTransaction[]             @relation("movedToTransaction")
+  debitTransaction         DebitTransaction[]
+  creditTransaction        CreditCardTransaction[]
+  creditSettledTransaction CreditCardSettledTransaction[]
 }
 
 enum Currency {
@@ -59,15 +65,19 @@ enum Currency {
 }
 
 model Card {
-  id                String             @id @default(uuid()) @db.Uuid
-  accountId         String             @db.Uuid
-  account           Account            @relation(fields: [accountId], references: [id])
-  type              CardType
-  issuer            CardIssuer
-  lastFourDigits    String
-  createdAt         DateTime           @default(now())
-  updatedAt         DateTime           @updatedAt
-  debitTransactions DebitTransaction[]
+  id                            String                         @id @default(uuid()) @db.Uuid
+  accountId                     String                         @db.Uuid
+  account                       Account                        @relation(fields: [accountId], references: [id])
+  type                          CardType
+  issuer                        CardIssuer
+  lastFourDigits                String
+  createdAt                     DateTime                       @default(now())
+  updatedAt                     DateTime                       @updatedAt
+  // TODO rename to debitCardTransactions
+  debitTransactions             DebitTransaction[]
+  creditCardUsages              CreditCardUsage[]
+  creditCardTransactions        CreditCardTransaction[]
+  creditCardSettledTransactions CreditCardSettledTransaction[]
 }
 
 enum CardType {
@@ -80,16 +90,49 @@ enum CardIssuer {
   MASTERCARD
 }
 
+model CreditCardUsage {
+  id                String                       @id @default(uuid()) @db.Uuid
+  cardId            String                       @db.Uuid
+  card              Card                         @relation(fields: [cardId], references: [id])
+  type              CreditCardUsageType
+  amount            Int
+  currency          Currency
+  description       String
+  installmentsUsage CreditCardInstallmentsUsage?
+  subscriptionUsage CreditCardSubscriptionUsage?
+  transactions      CreditCardTransaction[]
+}
+
+enum CreditCardUsageType {
+  INSTALLMENTS
+  SUBSCRIPTION
+}
+
+model CreditCardInstallmentsUsage {
+  usageId           String          @id @db.Uuid
+  usage             CreditCardUsage @relation(fields: [usageId], references: [id])
+  installmentsCount Int
+}
+
+model CreditCardSubscriptionUsage {
+  usageId String          @id @db.Uuid
+  usage   CreditCardUsage @relation(fields: [usageId], references: [id])
+  active  Boolean
+}
+
 model Transaction {
-  id                  String               @id @default(uuid()) @db.Uuid
-  type                TransactionType
-  createdAt           DateTime             @default(now())
-  updatedAt           DateTime             @updatedAt
-  initTransaction     InitTransaction?
-  sentTransaction     SentTransaction?
-  receivedTransaction ReceivedTransaction?
-  movedTransaction    MovedTransaction?
-  debitTransaction    DebitTransaction?
+  id                           String                        @id @default(uuid()) @db.Uuid
+  type                         TransactionType
+  createdAt                    DateTime                      @default(now())
+  updatedAt                    DateTime                      @updatedAt
+  initTransaction              InitTransaction?
+  sentTransaction              SentTransaction?
+  receivedTransaction          ReceivedTransaction?
+  movedTransaction             MovedTransaction?
+  // TODO rename debitCardTransaction
+  debitTransaction             DebitTransaction?
+  creditCardTransaction        CreditCardTransaction?
+  creditCardSettledTransaction CreditCardSettledTransaction?
 }
 
 enum TransactionType {
@@ -98,6 +141,8 @@ enum TransactionType {
   RECEIVED
   MOVED
   DEBIT_CARD
+  CREDIT_CARD
+  CREDIT_CARD_SETTLED
 }
 
 model InitTransaction {
@@ -139,6 +184,7 @@ model MovedTransaction {
   conversionRate Float       @default(1)
 }
 
+// TODO rename to DebitCardTransaction
 model DebitTransaction {
   transactionId String      @id @unique @db.Uuid
   transaction   Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
@@ -149,6 +195,39 @@ model DebitTransaction {
   amount        Int         @default(0)
   // TODO make it required
   description   String?
+}
+
+// TODO makes sense to have amount as foreign key to the usage?
+model CreditCardTransaction {
+  transactionId          String                        @id @unique @db.Uuid
+  transaction            Transaction                   @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  cardId                 String                        @db.Uuid
+  card                   Card                          @relation(fields: [cardId], references: [id])
+  usageId                String                        @db.Uuid
+  usage                  CreditCardUsage               @relation(fields: [usageId], references: [id])
+  originalAmount         Int
+  originalCurrency       Currency
+  effectiveFrom          DateTime
+  installmentNumber      Int?
+  // Optional fields defined once the transaction is settled
+  settledByTransactionId String?                       @unique @db.Uuid
+  settledByTransaction   CreditCardSettledTransaction? @relation(fields: [settledByTransactionId], references: [transactionId])
+  jarId                  String?                       @db.Uuid
+  jar                    Jar?                          @relation(fields: [jarId], references: [id])
+  amount                 Int?
+  conversionRate         Float?
+}
+
+model CreditCardSettledTransaction {
+  transactionId       String                  @id @unique @db.Uuid
+  transaction         Transaction             @relation(fields: [transactionId], references: [id])
+  cardId              String                  @db.Uuid
+  card                Card                    @relation(fields: [cardId], references: [id])
+  jarId               String                  @db.Uuid
+  jar                 Jar                     @relation(fields: [jarId], references: [id])
+  amount              Int // For any fees or other adjustments
+  statementClosedAt   DateTime
+  settledTransactions CreditCardTransaction[]
 }
 
 view JarBalanceUpdate {
