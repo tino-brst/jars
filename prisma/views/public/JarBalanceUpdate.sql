@@ -7,11 +7,11 @@ FROM
 UNION
 ALL
 SELECT
-  dt."transactionId",
-  dt."jarId",
-  dt.amount
+  dct."transactionId",
+  dct."jarId",
+  dct.amount
 FROM
-  "DebitTransaction" dt
+  "DebitCardTransaction" dct
 UNION
 ALL
 SELECT

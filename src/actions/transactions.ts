@@ -200,7 +200,7 @@ async function createDebitTransaction(formData: FormData) {
   await db.transaction.create({
     data: {
       type: 'DEBIT_CARD',
-      debitTransaction: {
+      debitCardTransaction: {
         create: {
           cardId: parse.data.cardId,
           jarId: primaryJarForGivenCurrency.id,

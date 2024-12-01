@@ -49,11 +49,12 @@ model Jar {
   isPrimary                Boolean                        @default(false)
   initTransaction          InitTransaction?
   // TODO rename (plural, e.g. sentTransactions)
+  // TODO rename debit/credit/creditSettled to debitCard/creditCard/creditCardSettled
   sentTransaction          SentTransaction[]
   receivedTransaction      ReceivedTransaction[]
   movedFromTransaction     MovedTransaction[]             @relation("movedFromTransaction")
   movedToTransaction       MovedTransaction[]             @relation("movedToTransaction")
-  debitTransaction         DebitTransaction[]
+  debitTransaction         DebitCardTransaction[]
   creditTransaction        CreditCardTransaction[]
   creditSettledTransaction CreditCardSettledTransaction[]
 }
@@ -73,8 +74,7 @@ model Card {
   lastFourDigits                String
   createdAt                     DateTime                       @default(now())
   updatedAt                     DateTime                       @updatedAt
-  // TODO rename to debitCardTransactions
-  debitTransactions             DebitTransaction[]
+  debitCardTransactions         DebitCardTransaction[]
   creditCardUsages              CreditCardUsage[]
   creditCardTransactions        CreditCardTransaction[]
   creditCardSettledTransactions CreditCardSettledTransaction[]
@@ -129,8 +129,7 @@ model Transaction {
   sentTransaction              SentTransaction?
   receivedTransaction          ReceivedTransaction?
   movedTransaction             MovedTransaction?
-  // TODO rename debitCardTransaction
-  debitTransaction             DebitTransaction?
+  debitCardTransaction         DebitCardTransaction?
   creditCardTransaction        CreditCardTransaction?
   creditCardSettledTransaction CreditCardSettledTransaction?
 }
@@ -184,8 +183,7 @@ model MovedTransaction {
   conversionRate Float       @default(1)
 }
 
-// TODO rename to DebitCardTransaction
-model DebitTransaction {
+model DebitCardTransaction {
   transactionId String      @id @unique @db.Uuid
   transaction   Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
   cardId        String      @db.Uuid

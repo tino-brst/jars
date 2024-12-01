@@ -14,7 +14,7 @@ import {
   Jar,
   MovedTransaction,
   Account,
-  DebitTransaction,
+  DebitCardTransaction,
   Card,
 } from '@prisma/client'
 import React, { Fragment } from 'react'
@@ -32,7 +32,7 @@ type Transaction = Omit<BaseTransaction, 'type'> &
         type: typeof TransactionType.INIT
         jar: JarWithAccount
       })
-    | (Omit<DebitTransaction, 'transactionId' | 'jarId' | 'cardId'> & {
+    | (Omit<DebitCardTransaction, 'transactionId' | 'jarId' | 'cardId'> & {
         type: typeof TransactionType.DEBIT_CARD
         jar: JarWithAccount
         card: Card
@@ -65,7 +65,7 @@ async function Transactions() {
             },
           },
         },
-        debitTransaction: {
+        debitCardTransaction: {
           include: {
             jar: {
               include: {
@@ -124,10 +124,13 @@ async function Transactions() {
         }
       }
 
-      if (transaction.type === 'DEBIT_CARD' && transaction.debitTransaction) {
+      if (
+        transaction.type === 'DEBIT_CARD' &&
+        transaction.debitCardTransaction
+      ) {
         return {
           ...transaction,
-          ...transaction.debitTransaction,
+          ...transaction.debitCardTransaction,
           type: transaction.type,
         }
       }
