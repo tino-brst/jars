@@ -34,11 +34,14 @@ function NewTransactionForms({
   jars: Array<JarWithBalance>
   cards: Array<Card>
 }) {
+  const debitCards = cards.filter((card) => card.type === 'DEBIT')
+  const hasDebitCards = !!debitCards.length
+
   const hasNonEmptyJars = jars.some((jar) => jar.balance > 0)
   const hasMoreThanOneJar = jars.length > 1
 
   const [transactionType, setTransactionType] = useState<TransactionType>(
-    TransactionType.DEBIT_CARD,
+    TransactionType.RECEIVED,
   )
 
   return (
@@ -50,7 +53,10 @@ function NewTransactionForms({
             setTransactionType(event.target.value as TransactionType)
           }
         >
-          <option value={TransactionType.DEBIT_CARD}>Debit Card</option>
+          {hasDebitCards && (
+            <option value={TransactionType.DEBIT_CARD}>Debit Card</option>
+          )}
+
           {hasNonEmptyJars && (
             <>
               <option value={TransactionType.SENT}>Sent</option>
@@ -82,13 +88,21 @@ function NewTransactionForms({
               </optgroup>
             </>
           )}
+
+          {!hasDebitCards && (
+            <optgroup label="No debit cards">
+              <option value={TransactionType.DEBIT_CARD} disabled>
+                Debit Card
+              </option>
+            </optgroup>
+          )}
         </Select>
 
         {transactionType === 'DEBIT_CARD' && (
           <DebitCardTransactionForm
             accounts={accounts}
             jars={jars}
-            cards={cards}
+            cards={debitCards}
           />
         )}
 
