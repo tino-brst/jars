@@ -11,7 +11,7 @@ function Checkbox({
     <input
       type="checkbox"
       className={twMerge(
-        'size-5 appearance-none rounded border bg-white transition-colors checked:border-blue-500 checked:bg-blue-500 disabled:bg-gray-100',
+        'size-5 appearance-none rounded border bg-white checked:border-blue-500 checked:bg-blue-500 disabled:bg-gray-100',
         className,
       )}
       {...prop}
