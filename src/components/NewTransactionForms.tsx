@@ -12,13 +12,7 @@ import { AddTransactionSubmitButton } from '@/components/AddTransactionSubmitBut
 
 import { Input } from '@/components/primitives/Input'
 import { Select } from '@/components/primitives/Select'
-import {
-  Account,
-  Card,
-  CreditCardUsageType,
-  JarWithBalance,
-  TransactionType,
-} from '@prisma/client'
+import { Account, Card, JarWithBalance, TransactionType } from '@prisma/client'
 import { FormContainer } from './FormContainer'
 import { Tabs } from './primitives/Tabs'
 
