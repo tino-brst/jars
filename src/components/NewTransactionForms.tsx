@@ -12,8 +12,15 @@ import { AddTransactionSubmitButton } from '@/components/AddTransactionSubmitBut
 
 import { Input } from '@/components/primitives/Input'
 import { Select } from '@/components/primitives/Select'
-import { Account, Card, JarWithBalance, TransactionType } from '@prisma/client'
+import {
+  Account,
+  Card,
+  CreditCardUsageType,
+  JarWithBalance,
+  TransactionType,
+} from '@prisma/client'
 import { FormContainer } from './FormContainer'
+import { Tabs } from './primitives/Tabs'
 
 // TODO clear inputs after submit (I think this already works?)
 // TODO stricter ts, array[number]: something | undefined
@@ -240,7 +247,7 @@ function CreditCardTransactionForm({
   return (
     <form
       className="flex flex-col gap-2"
-      // TODO
+      // TODO ✋ createCreditCardUsage action
       action={undefined}
     >
       <Select
@@ -277,7 +284,26 @@ function CreditCardTransactionForm({
           ))}
         </Select>
       </div>
-      {/* TODO installments/subscription tab */}
+
+      <Tabs.Root defaultValue="installments">
+        <Tabs.List>
+          <Tabs.Trigger value="installments">Installments</Tabs.Trigger>
+          <Tabs.Trigger value="subscription">Subscription</Tabs.Trigger>
+        </Tabs.List>
+        <Tabs.Content value="installments" className="flex flex-col">
+          {/* TODO input type="text" name="type" value={CreditCardUsageType.INSTALLMENTS} */}
+          <Input
+            required
+            type="number"
+            name="installmentsCount"
+            step="1"
+            min="1"
+          />
+        </Tabs.Content>
+        <Tabs.Content value="subscription">
+          {/* TODO input type="text" name="type" value={CreditCardUsageType.SUBSCRIPTION} */}
+        </Tabs.Content>
+      </Tabs.Root>
 
       <AddTransactionSubmitButton />
     </form>
