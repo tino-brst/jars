@@ -4,9 +4,14 @@ import { z } from 'zod'
 
 import { db } from '@/lib/db'
 import { revalidatePath } from 'next/cache'
-import { Currency } from '@prisma/client'
+import {
+  CreditCardTransaction,
+  CreditCardUsageType,
+  Currency,
+} from '@prisma/client'
 
 // TODO make revalidation more specific, not all of the things
+// TODO ✋ rename all schemas? no need for the FormData suffix
 
 const sentOrReceivedTransactionFormDataSchema = z.object({
   jarId: z.string().uuid(),
@@ -214,9 +219,128 @@ async function createDebitCardTransaction(formData: FormData) {
   revalidatePath('/', 'layout')
 }
 
+// TODO switch to z.merge
+const baseCreditCardUsageFormDataSchema = {
+  cardId: z.string().uuid(),
+  description: z.string(),
+  currency: z.nativeEnum(Currency),
+  amount: z.coerce
+    .number()
+    .positive()
+    .step(0.01)
+    .transform((value) => value * 100),
+}
+
+const creditCardUsageFormDataSchema = z.discriminatedUnion('type', [
+  z.object({
+    ...baseCreditCardUsageFormDataSchema,
+    type: z.literal(CreditCardUsageType.INSTALLMENTS),
+    installmentsCount: z.coerce.number().int().positive(),
+  }),
+  // TODO ✋ add subscriptions support
+  // z.object({
+  //   ...baseCreditCardUsageFormDataSchema,
+  //   type: z.literal(CreditCardUsageType.SUBSCRIPTION),
+  // }),
+])
+
+async function createCreditCardUsage(formData: FormData) {
+  const parse = creditCardUsageFormDataSchema.safeParse(
+    Object.fromEntries(formData),
+  )
+
+  if (!parse.success) {
+    console.log(parse.error.issues)
+    throw parse.error.issues
+  }
+
+  const data = parse.data
+
+  if (data.type === 'INSTALLMENTS') {
+    // For installments, we register the usage and create all its associated
+    // transactions (one per installment), each a month apart (in their
+    // effectiveFrom fields)
+
+    const now = new Date()
+
+    type RequiredCreditCardTransactionFields = Pick<
+      CreditCardTransaction,
+      | 'installmentNumber'
+      | 'originalAmount'
+      | 'originalCurrency'
+      | 'effectiveFrom'
+    >
+
+    // When dividing the total amount by the number of installments, we might
+    // not get rounded installmentAmounts, which we need given that we store
+    // values in cents. So we round the amounts and keep track of how much we
+    // left out, to later add it back in as part of one of the installments
+    // (commonly the first or the last)
+    const totalAmount = data.amount
+    const installmentAmount = Math.floor(data.amount / data.installmentsCount)
+    const remainderAmount = totalAmount % data.installmentsCount
+
+    const creditCardTransactions = Array.from(
+      { length: data.installmentsCount },
+      (_, index) => index + 1,
+    ).map<RequiredCreditCardTransactionFields>((installmentNumber) => {
+      const originalAmount = -(installmentNumber === 1
+        ? installmentAmount + remainderAmount
+        : installmentAmount)
+
+      // Date.setMont takes into account days that might no repeat on the next
+      // month (e.g. 31st of a month that doesn't have 31 days)
+      const effectiveFrom = new Date(now)
+      effectiveFrom.setMonth(effectiveFrom.getMonth() + installmentNumber - 1)
+
+      return {
+        installmentNumber,
+        originalAmount,
+        originalCurrency: data.currency,
+        effectiveFrom,
+      }
+    })
+
+    await db.creditCardUsage.create({
+      data: {
+        type: 'INSTALLMENTS',
+        cardId: data.cardId,
+        description: data.description,
+        amount: data.amount,
+        currency: data.currency,
+        createdAt: now,
+        installmentsUsage: {
+          create: {
+            installmentsCount: data.installmentsCount,
+          },
+        },
+        transactions: {
+          create: creditCardTransactions.map((transaction) => ({
+            ...transaction,
+            transaction: {
+              create: {
+                type: 'CREDIT_CARD',
+                createdAt: now,
+              },
+            },
+            card: {
+              connect: {
+                id: data.cardId,
+              },
+            },
+          })),
+        },
+      },
+    })
+  }
+
+  revalidatePath('/', 'layout')
+}
+
 export {
   createSentTransaction,
   createReceivedTransaction,
   createMovedTransaction,
   createDebitCardTransaction,
+  createCreditCardUsage,
 }

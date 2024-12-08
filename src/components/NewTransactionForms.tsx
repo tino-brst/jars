@@ -7,12 +7,19 @@ import {
   createSentTransaction,
   createReceivedTransaction,
   createDebitCardTransaction,
+  createCreditCardUsage,
 } from '@/actions/transactions'
 import { AddTransactionSubmitButton } from '@/components/AddTransactionSubmitButton'
 
 import { Input } from '@/components/primitives/Input'
 import { Select } from '@/components/primitives/Select'
-import { Account, Card, JarWithBalance, TransactionType } from '@prisma/client'
+import {
+  Account,
+  Card,
+  CreditCardUsageType,
+  JarWithBalance,
+  TransactionType,
+} from '@prisma/client'
 import { FormContainer } from './FormContainer'
 import { Tabs } from './primitives/Tabs'
 
@@ -225,6 +232,7 @@ function CreditCardTransactionForm({
   const [selectedCardId, setSelectedCardId] = useState<string>(cards[0].id)
   const selectedCard = cards.find((card) => card.id === selectedCardId)
 
+  // TODO credit cards have access to all currencies, not just the primary jar's
   const availableCurrencies =
     jars
       .filter((jar) => jar.accountId === selectedCard?.accountId)
@@ -239,11 +247,7 @@ function CreditCardTransactionForm({
     .filter((account) => account.cards.length > 0)
 
   return (
-    <form
-      className="flex flex-col gap-2"
-      // TODO ✋ createCreditCardUsage action
-      action={undefined}
-    >
+    <form className="flex flex-col gap-2" action={createCreditCardUsage}>
       <Select
         required
         name="cardId"
@@ -285,7 +289,11 @@ function CreditCardTransactionForm({
           <Tabs.Trigger value="subscription">Subscription</Tabs.Trigger>
         </Tabs.List>
         <Tabs.Content value="installments" className="flex flex-col">
-          {/* TODO input type="text" name="type" value={CreditCardUsageType.INSTALLMENTS} */}
+          <input
+            type="hidden"
+            name="type"
+            value={CreditCardUsageType.INSTALLMENTS}
+          />
           <Input
             required
             type="number"
@@ -294,9 +302,14 @@ function CreditCardTransactionForm({
             min="1"
           />
         </Tabs.Content>
-        <Tabs.Content value="subscription">
-          {/* TODO input type="text" name="type" value={CreditCardUsageType.SUBSCRIPTION} */}
-        </Tabs.Content>
+        {/* TODO */}
+        {/* <Tabs.Content value="subscription">
+          <input
+            type="hidden"
+            name="type"
+            value={CreditCardUsageType.SUBSCRIPTION}
+          />
+        </Tabs.Content> */}
       </Tabs.Root>
 
       <AddTransactionSubmitButton />
