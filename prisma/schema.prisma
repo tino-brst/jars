@@ -99,6 +99,7 @@ model CreditCardUsage {
   installmentsUsage CreditCardInstallmentsUsage?
   subscriptionUsage CreditCardSubscriptionUsage?
   transactions      CreditCardTransaction[]
+  createdAt         DateTime                     @default(now())
 }
 
 enum CreditCardUsageType {
