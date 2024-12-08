@@ -216,8 +216,7 @@ async function createDebitCardTransaction(formData: FormData) {
   revalidatePath('/', 'layout')
 }
 
-// TODO switch to z.merge
-const baseCreditCardUsageSchema = {
+const baseCreditCardUsageSchema = z.object({
   cardId: z.string().uuid(),
   description: z.string(),
   currency: z.nativeEnum(Currency),
@@ -226,19 +225,21 @@ const baseCreditCardUsageSchema = {
     .positive()
     .step(0.01)
     .transform((value) => value * 100),
-}
+})
 
 const creditCardUsageSchema = z.discriminatedUnion('type', [
-  z.object({
-    ...baseCreditCardUsageSchema,
-    type: z.literal(CreditCardUsageType.INSTALLMENTS),
-    installmentsCount: z.coerce.number().int().positive(),
-  }),
+  baseCreditCardUsageSchema.merge(
+    z.object({
+      type: z.literal(CreditCardUsageType.INSTALLMENTS),
+      installmentsCount: z.coerce.number().int().positive(),
+    }),
+  ),
   // TODO ✋ add subscriptions support
-  // z.object({
-  //   ...baseCreditCardUsageSchema,
-  //   type: z.literal(CreditCardUsageType.SUBSCRIPTION),
-  // }),
+  // baseCreditCardUsageSchema.merge(
+  //   z.object({
+  //     type: z.literal(CreditCardUsageType.SUBSCRIPTION),
+  //   }),
+  // ),
 ])
 
 async function createCreditCardUsage(formData: FormData) {
@@ -284,7 +285,8 @@ async function createCreditCardUsage(formData: FormData) {
         : installmentAmount)
 
       // Date.setMont takes into account days that might no repeat on the next
-      // month (e.g. 31st of a month that doesn't have 31 days)
+      // month (e.g. 31st of a month that doesn't have 31 days gets pushed to
+      // 30/29/28 if needed)
       const effectiveFrom = new Date(now)
       effectiveFrom.setMonth(effectiveFrom.getMonth() + installmentNumber - 1)
 
