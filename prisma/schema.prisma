@@ -109,7 +109,7 @@ enum CreditCardUsageType {
 model CreditCardInstallmentsUsage {
   usageId           String          @id @db.Uuid
   usage             CreditCardUsage @relation(fields: [usageId], references: [id])
-  installmentsCount Int
+  installmentsCount Int             @default(1)
 }
 
 model CreditCardSubscriptionUsage {
