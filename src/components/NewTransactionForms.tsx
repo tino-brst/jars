@@ -17,6 +17,7 @@ import {
   Account,
   Card,
   CreditCardUsageType,
+  Currency,
   JarWithBalance,
   TransactionType,
 } from '@prisma/client'
@@ -130,11 +131,7 @@ function NewTransactionForms({
         )}
 
         {transactionType === 'CREDIT_CARD' && (
-          <CreditCardTransactionForm
-            accounts={accounts}
-            jars={jars}
-            cards={creditCards}
-          />
+          <CreditCardTransactionForm accounts={accounts} cards={creditCards} />
         )}
 
         {transactionType === 'SENT' && (
@@ -222,23 +219,11 @@ function DebitCardTransactionForm({
 
 function CreditCardTransactionForm({
   accounts,
-  jars,
   cards,
 }: {
   accounts: Array<Account>
-  jars: Array<JarWithBalance>
   cards: Array<Card>
 }) {
-  const [selectedCardId, setSelectedCardId] = useState<string>(cards[0].id)
-  const selectedCard = cards.find((card) => card.id === selectedCardId)
-
-  // TODO credit cards have access to all currencies, not just the primary jar's
-  const availableCurrencies =
-    jars
-      .filter((jar) => jar.accountId === selectedCard?.accountId)
-      .filter((jar) => jar.isPrimary)
-      .map((jar) => jar.currency) ?? []
-
   const accountsWithCards = accounts
     .map((account) => ({
       ...account,
@@ -248,12 +233,7 @@ function CreditCardTransactionForm({
 
   return (
     <form className="flex flex-col gap-2" action={createCreditCardUsage}>
-      <Select
-        required
-        name="cardId"
-        value={selectedCardId}
-        onChange={(event) => setSelectedCardId(event.target.value)}
-      >
+      <Select required name="cardId">
         {accountsWithCards.map((account) => (
           <optgroup key={account.id} label={account.name}>
             {account.cards.map((card) => (
@@ -274,12 +254,10 @@ function CreditCardTransactionForm({
           min="0.01"
           className="flex-1"
         />
-        <Select required name="currency" className="flex-1">
-          {availableCurrencies.map((currency) => (
-            <option key={currency} value={currency}>
-              {currency}
-            </option>
-          ))}
+        <Select name="currency" required className="flex-1">
+          <option value={Currency.USD}>USD</option>
+          <option value={Currency.ARS}>ARS</option>
+          <option value={Currency.EUR}>EUR</option>
         </Select>
       </div>
 

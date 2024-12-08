@@ -273,7 +273,7 @@ async function createCreditCardUsage(formData: FormData) {
     // left out, to later add it back in as part of one of the installments
     // (commonly the first or the last)
     const totalAmount = data.amount
-    const installmentAmount = Math.floor(data.amount / data.installmentsCount)
+    const installmentAmount = Math.floor(totalAmount / data.installmentsCount)
     const remainderAmount = totalAmount % data.installmentsCount
 
     const creditCardTransactions = Array.from(
