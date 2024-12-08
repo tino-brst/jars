@@ -11,9 +11,8 @@ import {
 } from '@prisma/client'
 
 // TODO make revalidation more specific, not all of the things
-// TODO ✋ rename all schemas? no need for the FormData suffix
 
-const sentOrReceivedTransactionFormDataSchema = z.object({
+const sentOrReceivedTransactionSchema = z.object({
   jarId: z.string().uuid(),
   counterparty: z.string(),
   amount: z.coerce
@@ -24,7 +23,7 @@ const sentOrReceivedTransactionFormDataSchema = z.object({
 })
 
 async function createSentTransaction(formData: FormData) {
-  const parse = sentOrReceivedTransactionFormDataSchema.safeParse(
+  const parse = sentOrReceivedTransactionSchema.safeParse(
     Object.fromEntries(formData),
   )
 
@@ -49,7 +48,7 @@ async function createSentTransaction(formData: FormData) {
 }
 
 async function createReceivedTransaction(formData: FormData) {
-  const parse = sentOrReceivedTransactionFormDataSchema.safeParse(
+  const parse = sentOrReceivedTransactionSchema.safeParse(
     Object.fromEntries(formData),
   )
 
@@ -73,7 +72,7 @@ async function createReceivedTransaction(formData: FormData) {
   revalidatePath('/', 'layout')
 }
 
-const movedTransactionFormDataSchema = z.object({
+const movedTransactionSchema = z.object({
   fromJarId: z.string().uuid(),
   fromAmount: z.coerce
     .number()
@@ -101,9 +100,7 @@ const movedTransactionFormDataSchema = z.object({
 })
 
 async function createMovedTransaction(formData: FormData) {
-  const parse = movedTransactionFormDataSchema.safeParse(
-    Object.fromEntries(formData),
-  )
+  const parse = movedTransactionSchema.safeParse(Object.fromEntries(formData))
 
   if (!parse.success) {
     throw parse.error.issues
@@ -156,7 +153,7 @@ async function createMovedTransaction(formData: FormData) {
   revalidatePath('/', 'layout')
 }
 
-const debitCardTransactionFormDataSchema = z.object({
+const debitCardTransactionSchema = z.object({
   cardId: z.string().uuid(),
   description: z.string(),
   currency: z.nativeEnum(Currency),
@@ -168,7 +165,7 @@ const debitCardTransactionFormDataSchema = z.object({
 })
 
 async function createDebitCardTransaction(formData: FormData) {
-  const parse = debitCardTransactionFormDataSchema.safeParse(
+  const parse = debitCardTransactionSchema.safeParse(
     Object.fromEntries(formData),
   )
 
@@ -220,7 +217,7 @@ async function createDebitCardTransaction(formData: FormData) {
 }
 
 // TODO switch to z.merge
-const baseCreditCardUsageFormDataSchema = {
+const baseCreditCardUsageSchema = {
   cardId: z.string().uuid(),
   description: z.string(),
   currency: z.nativeEnum(Currency),
@@ -231,23 +228,21 @@ const baseCreditCardUsageFormDataSchema = {
     .transform((value) => value * 100),
 }
 
-const creditCardUsageFormDataSchema = z.discriminatedUnion('type', [
+const creditCardUsageSchema = z.discriminatedUnion('type', [
   z.object({
-    ...baseCreditCardUsageFormDataSchema,
+    ...baseCreditCardUsageSchema,
     type: z.literal(CreditCardUsageType.INSTALLMENTS),
     installmentsCount: z.coerce.number().int().positive(),
   }),
   // TODO ✋ add subscriptions support
   // z.object({
-  //   ...baseCreditCardUsageFormDataSchema,
+  //   ...baseCreditCardUsageSchema,
   //   type: z.literal(CreditCardUsageType.SUBSCRIPTION),
   // }),
 ])
 
 async function createCreditCardUsage(formData: FormData) {
-  const parse = creditCardUsageFormDataSchema.safeParse(
-    Object.fromEntries(formData),
-  )
+  const parse = creditCardUsageSchema.safeParse(Object.fromEntries(formData))
 
   if (!parse.success) {
     console.log(parse.error.issues)
