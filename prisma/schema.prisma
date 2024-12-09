@@ -194,16 +194,17 @@ model DebitCardTransaction {
 }
 
 model CreditCardTransaction {
-  transactionId          String                        @id @unique @db.Uuid
-  transaction            Transaction                   @relation(fields: [transactionId], references: [id], onDelete: Cascade)
-  cardId                 String                        @db.Uuid
-  card                   Card                          @relation(fields: [cardId], references: [id])
-  usageId                String                        @db.Uuid
-  usage                  CreditCardUsage               @relation(fields: [usageId], references: [id])
-  originalAmount         Int
-  originalCurrency       Currency
-  effectiveFrom          DateTime
-  installmentNumber      Int?
+  transactionId     String          @id @unique @db.Uuid
+  transaction       Transaction     @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  cardId            String          @db.Uuid
+  card              Card            @relation(fields: [cardId], references: [id])
+  usageId           String          @db.Uuid
+  usage             CreditCardUsage @relation(fields: [usageId], references: [id])
+  originalAmount    Int
+  originalCurrency  Currency
+  effectiveFrom     DateTime
+  installmentNumber Int?
+
   // Optional fields defined once the transaction is settled
   settledByTransactionId String?                       @unique @db.Uuid
   settledByTransaction   CreditCardSettledTransaction? @relation(fields: [settledByTransactionId], references: [transactionId])
