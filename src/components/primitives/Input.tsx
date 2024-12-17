@@ -1,6 +1,9 @@
 import { ComponentPropsWithRef, HTMLInputTypeAttribute } from 'react'
 import { twMerge } from 'tailwind-merge'
 
+// TODO ✋ add proper date support, with the label on the left and the date
+// picker/picked on the right. Maybe a whole different component?
+
 function Input({
   className,
   name,
@@ -11,7 +14,7 @@ function Input({
   fallback,
   ...props
 }: Omit<ComponentPropsWithRef<'input'>, 'type'> & {
-  type?: Extract<HTMLInputTypeAttribute, 'text' | 'number'>
+  type?: Extract<HTMLInputTypeAttribute, 'text' | 'number' | 'date'>
   fallback?: string | number
 }) {
   return (

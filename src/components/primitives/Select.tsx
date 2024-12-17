@@ -2,6 +2,10 @@ import { ComponentPropsWithRef } from 'react'
 import { twMerge } from 'tailwind-merge'
 import { ChevronSelectorVerticalIcon } from '../icons/ChevronSelectorVerticalIcon'
 
+// TODO ✋ add label (like the iOS one, with the label on the left, and the
+// selected value on the right). When wrapping a select with a label, do up and
+// down arrows still work?
+
 function Select({
   className,
   children,
