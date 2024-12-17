@@ -1,9 +1,6 @@
 import { ComponentPropsWithRef, HTMLInputTypeAttribute } from 'react'
 import { twMerge } from 'tailwind-merge'
 
-// TODO ✋ add proper date support, with the label on the left and the date
-// picker/picked on the right. Maybe a whole different component?
-
 function Input({
   className,
   name,
@@ -12,6 +9,7 @@ function Input({
   min,
   max,
   fallback,
+  type = 'text',
   ...props
 }: Omit<ComponentPropsWithRef<'input'>, 'type'> & {
   type?: Extract<HTMLInputTypeAttribute, 'text' | 'number' | 'date'>
@@ -19,6 +17,7 @@ function Input({
 }) {
   return (
     <input
+      type={type}
       required={required}
       name={name}
       placeholder={[
@@ -30,7 +29,12 @@ function Input({
       ]
         .filter(Boolean)
         .join(' ')}
-      className={twMerge('min-w-0 rounded-lg border px-3 py-0.5', className)}
+      className={twMerge(
+        'min-w-0 rounded-lg border bg-white px-3 py-0.5 text-black [&::-webkit-calendar-picker-indicator]:hidden',
+        type === 'date' &&
+          '[label_&]:-my-0.5 [label_&]:rounded-none [label_&]:border-none [label_&]:bg-transparent [label_&]:pl-2 [label_&]:text-right [label_&]:outline-none',
+        className,
+      )}
       {...props}
     />
   )
