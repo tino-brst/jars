@@ -223,6 +223,7 @@ model CreditCardSettledTransaction {
   card                Card                    @relation(fields: [cardId], references: [id])
   jarId               String                  @db.Uuid
   jar                 Jar                     @relation(fields: [jarId], references: [id])
+  // TODO add amountSettled, just for the record, since it doesn't affect the jar balance
   amount              Int // For any fees or other adjustments
   statementClosedAt   DateTime
   settledTransactions CreditCardTransaction[]

@@ -6,19 +6,23 @@ import { AddCardSubmitButton } from './AddCardSubmitButton'
 import { Select } from './primitives/Select'
 import { Input } from './primitives/Input'
 import { FormContainer } from './FormContainer'
+import { Label } from './primitives/Label'
 
 function NewCardForm({ accounts }: { accounts: Array<Account> }) {
   return (
     <FormContainer title="New Card">
       <form className="flex flex-col gap-2" action={createCard}>
         <div className="flex flex-col gap-2">
-          <Select name="accountId" required>
-            {accounts.map((account) => (
-              <option key={account.id} value={account.id}>
-                {account.name}
-              </option>
-            ))}
-          </Select>
+          <Label>
+            Account
+            <Select name="accountId" required>
+              {accounts.map((account) => (
+                <option key={account.id} value={account.id}>
+                  {account.name}
+                </option>
+              ))}
+            </Select>
+          </Label>
           <div className="flex gap-2">
             <Select name="issuer" required className="flex-1">
               <option value={CardIssuer.VISA}>Visa</option>

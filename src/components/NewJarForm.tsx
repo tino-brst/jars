@@ -4,19 +4,23 @@ import { Select } from './primitives/Select'
 import { createJar } from '@/actions/jars'
 import { Input } from './primitives/Input'
 import { FormContainer } from './FormContainer'
+import { Label } from './primitives/Label'
 
 function NewJarForm({ accounts }: { accounts: Array<Account> }) {
   return (
     <FormContainer title="New Jar">
       <form action={createJar} className="flex flex-col gap-2">
         <div className="flex flex-col gap-2">
-          <Select name="accountId" required>
-            {accounts.map((account) => (
-              <option key={account.id} value={account.id}>
-                {account.name}
-              </option>
-            ))}
-          </Select>
+          <Label>
+            Account
+            <Select name="accountId" required>
+              {accounts.map((account) => (
+                <option key={account.id} value={account.id}>
+                  {account.name}
+                </option>
+              ))}
+            </Select>
+          </Label>
           <div className="flex gap-2">
             <Input type="text" name="name" className="flex-1" />
             <Select name="currency" required>

@@ -23,6 +23,7 @@ import {
 } from '@prisma/client'
 import { FormContainer } from './FormContainer'
 import { Tabs } from './primitives/Tabs'
+import { Label } from './primitives/Label'
 
 // TODO clear inputs after submit (I think this already works?)
 // TODO stricter ts, array[number]: something | undefined
@@ -59,68 +60,71 @@ function NewTransactionForms({
   return (
     <FormContainer title="New Transaction">
       <div className="flex flex-col gap-2">
-        <Select
-          value={transactionType}
-          onChange={(event) =>
-            setTransactionType(event.target.value as TransactionType)
-          }
-        >
-          {hasDebitCards && (
-            <option value={TransactionType.DEBIT_CARD}>Debit Card</option>
-          )}
+        <Label>
+          Type
+          <Select
+            value={transactionType}
+            onChange={(event) =>
+              setTransactionType(event.target.value as TransactionType)
+            }
+          >
+            {hasDebitCards && (
+              <option value={TransactionType.DEBIT_CARD}>Debit Card</option>
+            )}
 
-          {hasCreditCards && (
-            <option value={TransactionType.CREDIT_CARD}>Credit Card</option>
-          )}
+            {hasCreditCards && (
+              <option value={TransactionType.CREDIT_CARD}>Credit Card</option>
+            )}
 
-          {hasNonEmptyJars && (
-            <>
-              <option value={TransactionType.SENT}>Sent</option>
-              <option value={TransactionType.RECEIVED}>Received</option>
-              {hasMoreThanOneJar && (
-                <option value={TransactionType.MOVED}>Moved</option>
-              )}
-              {!hasMoreThanOneJar && (
-                <optgroup label="Not enough jars">
+            {hasNonEmptyJars && (
+              <>
+                <option value={TransactionType.SENT}>Sent</option>
+                <option value={TransactionType.RECEIVED}>Received</option>
+                {hasMoreThanOneJar && (
+                  <option value={TransactionType.MOVED}>Moved</option>
+                )}
+                {!hasMoreThanOneJar && (
+                  <optgroup label="Not enough jars">
+                    <option value={TransactionType.MOVED} disabled>
+                      Moved
+                    </option>
+                  </optgroup>
+                )}
+              </>
+            )}
+
+            {!hasNonEmptyJars && (
+              <>
+                <option value={TransactionType.RECEIVED}>Received</option>
+                <hr />
+                <optgroup label="Not enough balance">
+                  <option value={TransactionType.SENT} disabled>
+                    Sent
+                  </option>
                   <option value={TransactionType.MOVED} disabled>
                     Moved
                   </option>
                 </optgroup>
-              )}
-            </>
-          )}
+              </>
+            )}
 
-          {!hasNonEmptyJars && (
-            <>
-              <option value={TransactionType.RECEIVED}>Received</option>
-              <hr />
-              <optgroup label="Not enough balance">
-                <option value={TransactionType.SENT} disabled>
-                  Sent
-                </option>
-                <option value={TransactionType.MOVED} disabled>
-                  Moved
+            {!hasDebitCards && (
+              <optgroup label="No debit cards">
+                <option value={TransactionType.DEBIT_CARD} disabled>
+                  Debit Card
                 </option>
               </optgroup>
-            </>
-          )}
+            )}
 
-          {!hasDebitCards && (
-            <optgroup label="No debit cards">
-              <option value={TransactionType.DEBIT_CARD} disabled>
-                Debit Card
-              </option>
-            </optgroup>
-          )}
-
-          {!hasCreditCards && (
-            <optgroup label="No credit cards">
-              <option value={TransactionType.CREDIT_CARD} disabled>
-                Credit Card
-              </option>
-            </optgroup>
-          )}
-        </Select>
+            {!hasCreditCards && (
+              <optgroup label="No credit cards">
+                <option value={TransactionType.CREDIT_CARD} disabled>
+                  Credit Card
+                </option>
+              </optgroup>
+            )}
+          </Select>
+        </Label>
 
         {transactionType === 'DEBIT_CARD' && (
           <DebitCardTransactionForm
@@ -177,22 +181,26 @@ function DebitCardTransactionForm({
 
   return (
     <form className="flex flex-col gap-2" action={createDebitCardTransaction}>
-      <Select
-        required
-        name="cardId"
-        value={selectedCardId}
-        onChange={(event) => setSelectedCardId(event.target.value)}
-      >
-        {accountsWithCards.map((account) => (
-          <optgroup key={account.id} label={account.name}>
-            {account.cards.map((card) => (
-              <option key={card.id} value={card.id}>
-                {account.name} / •••• {card.lastFourDigits}
-              </option>
-            ))}
-          </optgroup>
-        ))}
-      </Select>
+      <Label>
+        Card
+        <Select
+          required
+          name="cardId"
+          value={selectedCardId}
+          onChange={(event) => setSelectedCardId(event.target.value)}
+        >
+          {accountsWithCards.map((account) => (
+            <optgroup key={account.id} label={account.name}>
+              {account.cards.map((card) => (
+                <option key={card.id} value={card.id}>
+                  {account.name} / •••• {card.lastFourDigits}
+                </option>
+              ))}
+            </optgroup>
+          ))}
+        </Select>
+      </Label>
+
       <Input required type="text" name="description" />
       <div className="flex items-center gap-2">
         <Input
@@ -233,17 +241,21 @@ function CreditCardTransactionForm({
 
   return (
     <form className="flex flex-col gap-2" action={createCreditCardUsage}>
-      <Select required name="cardId">
-        {accountsWithCards.map((account) => (
-          <optgroup key={account.id} label={account.name}>
-            {account.cards.map((card) => (
-              <option key={card.id} value={card.id}>
-                {account.name} / •••• {card.lastFourDigits}
-              </option>
-            ))}
-          </optgroup>
-        ))}
-      </Select>
+      <Label>
+        Card
+        <Select required name="cardId">
+          {accountsWithCards.map((account) => (
+            <optgroup key={account.id} label={account.name}>
+              {account.cards.map((card) => (
+                <option key={card.id} value={card.id}>
+                  {account.name} / •••• {card.lastFourDigits}
+                </option>
+              ))}
+            </optgroup>
+          ))}
+        </Select>
+      </Label>
+
       <Input required type="text" name="description" />
       <div className="flex items-center gap-2">
         <Input
