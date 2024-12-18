@@ -22,6 +22,7 @@ import React from 'react'
 
 import { Link } from '@/components/primitives/Link'
 import { TransactionsList } from '@/components/TransactionsList'
+import { Tabs } from '@/components/primitives/Tabs'
 
 type JarWithAccount = Omit<Jar, 'accountId'> & { account: Account }
 type CardWithAccount = Omit<Card, 'accountId'> & { account: Account }
@@ -240,6 +241,16 @@ async function Transactions() {
     })
     .filter((transaction): transaction is Transaction => transaction !== null)
 
+  const now = new Date()
+
+  const pastTransactions = transactions.filter(
+    (transaction) => transaction.effectiveAt <= now,
+  )
+
+  const upcomingTransactions = transactions
+    .filter((transaction) => transaction.effectiveAt > now)
+    .toReversed()
+
   const jars = await db.jarWithBalance.findMany()
   const accounts = await db.account.findMany()
   const cards = await db.card.findMany()
@@ -255,7 +266,20 @@ async function Transactions() {
         <>
           <NewTransactionForms jars={jars} accounts={accounts} cards={cards} />
 
-          {hasTransactions && <TransactionsList transactions={transactions} />}
+          {hasTransactions && (
+            <Tabs.Root defaultValue="history">
+              <Tabs.List>
+                <Tabs.Trigger value="history">History</Tabs.Trigger>
+                <Tabs.Trigger value="upcoming">Upcoming</Tabs.Trigger>
+              </Tabs.List>
+              <Tabs.Content value="history">
+                <TransactionsList transactions={pastTransactions} />
+              </Tabs.Content>
+              <Tabs.Content value="upcoming">
+                <TransactionsList transactions={upcomingTransactions} />
+              </Tabs.Content>
+            </Tabs.Root>
+          )}
         </>
       )}
 
