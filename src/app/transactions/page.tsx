@@ -16,6 +16,11 @@ import {
   Account,
   DebitCardTransaction,
   Card,
+  CreditCardTransaction,
+  CreditCardUsage as BaseCreditCardUsage,
+  CreditCardSubscriptionUsage,
+  CreditCardInstallmentsUsage,
+  CreditCardUsageType,
 } from '@prisma/client'
 import React, { Fragment } from 'react'
 import { twMerge } from 'tailwind-merge'
@@ -25,6 +30,20 @@ import { Link } from '@/components/primitives/Link'
 import { CreditCardIcon } from '@/components/icons/CreditCardIcon'
 
 type JarWithAccount = Omit<Jar, 'accountId'> & { account: Account }
+type CardWithAccount = Omit<Card, 'accountId'> & { account: Account }
+
+type CreditCardUsage = Omit<
+  BaseCreditCardUsage,
+  'type' | 'installmentsUsage' | 'subscriptionUsage'
+> &
+  (
+    | (Omit<CreditCardInstallmentsUsage, 'usageId'> & {
+        type: typeof CreditCardUsageType.INSTALLMENTS
+      })
+    | (Omit<CreditCardSubscriptionUsage, 'usageId'> & {
+        type: typeof CreditCardUsageType.SUBSCRIPTION
+      })
+  )
 
 type Transaction = Omit<BaseTransaction, 'type'> &
   (
@@ -36,6 +55,15 @@ type Transaction = Omit<BaseTransaction, 'type'> &
         type: typeof TransactionType.DEBIT_CARD
         jar: JarWithAccount
         card: Card
+      })
+    | (Omit<
+        CreditCardTransaction,
+        'transactionId' | 'jarId' | 'cardId' | 'usageId'
+      > & {
+        type: typeof TransactionType.CREDIT_CARD
+        jar: Jar | null
+        card: CardWithAccount
+        usage: CreditCardUsage
       })
     | (Omit<SentTransaction, 'transactionId' | 'jarId'> & {
         type: typeof TransactionType.SENT
@@ -73,6 +101,22 @@ async function Transactions() {
               },
             },
             card: true,
+          },
+        },
+        creditCardTransaction: {
+          include: {
+            usage: {
+              include: {
+                installmentsUsage: true,
+                subscriptionUsage: true,
+              },
+            },
+            jar: true,
+            card: {
+              include: {
+                account: true,
+              },
+            },
           },
         },
         sentTransaction: {
@@ -132,6 +176,43 @@ async function Transactions() {
           ...transaction,
           ...transaction.debitCardTransaction,
           type: transaction.type,
+        }
+      }
+
+      if (
+        transaction.type === 'CREDIT_CARD' &&
+        transaction.creditCardTransaction
+      ) {
+        if (
+          transaction.creditCardTransaction.usage.type === 'INSTALLMENTS' &&
+          transaction.creditCardTransaction.usage.installmentsUsage
+        ) {
+          return {
+            ...transaction,
+            ...transaction.creditCardTransaction,
+            type: transaction.type,
+            usage: {
+              ...transaction.creditCardTransaction.usage,
+              ...transaction.creditCardTransaction.usage.installmentsUsage,
+              type: transaction.creditCardTransaction.usage.type,
+            },
+          }
+        }
+
+        if (
+          transaction.creditCardTransaction.usage.type === 'SUBSCRIPTION' &&
+          transaction.creditCardTransaction.usage.subscriptionUsage
+        ) {
+          return {
+            ...transaction,
+            ...transaction.creditCardTransaction,
+            type: transaction.type,
+            usage: {
+              ...transaction.creditCardTransaction.usage,
+              ...transaction.creditCardTransaction.usage.subscriptionUsage,
+              type: transaction.creditCardTransaction.usage.type,
+            },
+          }
         }
       }
 
@@ -244,6 +325,38 @@ async function Transactions() {
                       </div>
                     </li>
                   )}
+
+                  {transaction.type === 'CREDIT_CARD' &&
+                    transaction.usage.type === 'INSTALLMENTS' && (
+                      <li className="flex min-h-16 items-center justify-between rounded-xl bg-gray-100 px-3 py-2">
+                        <div className="flex items-center gap-3">
+                          <div className="flex w-fit items-center justify-center rounded-full bg-gray-200 p-2">
+                            <CreditCardIcon size={20} />
+                          </div>
+                          <div className="flex flex-col">
+                            <p className="font-medium">
+                              {transaction.usage.description}
+                            </p>
+                            <p className="text-xs font-medium text-gray-400">
+                              Installment {transaction.installmentNumber} of{' '}
+                              {transaction.usage.installmentsCount}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex flex-col items-end">
+                          <p className="text-lg font-medium">
+                            {Math.abs(transaction.originalAmount / 100)}{' '}
+                            <span className="text-base text-gray-400">
+                              {transaction.originalCurrency}
+                            </span>
+                          </p>
+                          <p className="text-xs font-medium text-gray-400">
+                            Payed with {transaction.card.account.name} / ••••{' '}
+                            {transaction.card.lastFourDigits}
+                          </p>
+                        </div>
+                      </li>
+                    )}
 
                   {transaction.type === 'SENT' && (
                     <li className="flex min-h-16 items-center justify-between rounded-xl bg-gray-100 px-3 py-2">
