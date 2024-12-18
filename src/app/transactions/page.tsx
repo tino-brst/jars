@@ -45,7 +45,7 @@ type CreditCardUsage = Omit<
       })
   )
 
-type Transaction = Omit<BaseTransaction, 'type'> &
+export type Transaction = Omit<BaseTransaction, 'type'> &
   (
     | (Omit<InitTransaction, 'transactionId' | 'jarId'> & {
         type: typeof TransactionType.INIT

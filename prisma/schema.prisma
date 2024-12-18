@@ -123,6 +123,7 @@ model Transaction {
   id                           String                        @id @default(uuid()) @db.Uuid
   type                         TransactionType
   createdAt                    DateTime                      @default(now())
+  effectiveAt                  DateTime                      @default(now())
   updatedAt                    DateTime                      @updatedAt
   initTransaction              InitTransaction?
   sentTransaction              SentTransaction?
@@ -202,7 +203,6 @@ model CreditCardTransaction {
   usage             CreditCardUsage @relation(fields: [usageId], references: [id])
   originalAmount    Int
   originalCurrency  Currency
-  effectiveFrom     DateTime
   installmentNumber Int?
 
   // Optional fields defined once the transaction is settled

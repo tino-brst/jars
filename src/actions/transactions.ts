@@ -8,6 +8,7 @@ import {
   CreditCardTransaction,
   CreditCardUsageType,
   Currency,
+  Transaction,
 } from '@prisma/client'
 
 // TODO make revalidation more specific, not all of the things
@@ -255,17 +256,18 @@ async function createCreditCardUsage(formData: FormData) {
   if (data.type === 'INSTALLMENTS') {
     // For installments, we register the usage and create all its associated
     // transactions (one per installment), each a month apart (in their
-    // effectiveFrom fields)
+    // effectiveAt fields)
 
     const now = new Date()
 
     type RequiredCreditCardTransactionFields = Pick<
-      CreditCardTransaction,
-      | 'installmentNumber'
-      | 'originalAmount'
-      | 'originalCurrency'
-      | 'effectiveFrom'
-    >
+      Transaction,
+      'effectiveAt'
+    > &
+      Pick<
+        CreditCardTransaction,
+        'installmentNumber' | 'originalAmount' | 'originalCurrency'
+      >
 
     // When dividing the total amount by the number of installments, we might
     // not get rounded installmentAmounts, which we need given that we store
@@ -276,7 +278,7 @@ async function createCreditCardUsage(formData: FormData) {
     const installmentAmount = Math.floor(totalAmount / data.installmentsCount)
     const remainderAmount = totalAmount % data.installmentsCount
 
-    const creditCardTransactions = Array.from(
+    const installments = Array.from(
       { length: data.installmentsCount },
       (_, index) => index + 1,
     ).map<RequiredCreditCardTransactionFields>((installmentNumber) => {
@@ -287,14 +289,14 @@ async function createCreditCardUsage(formData: FormData) {
       // Date.setMont takes into account days that might no repeat on the next
       // month (e.g. 31st of a month that doesn't have 31 days gets pushed to
       // 30/29/28 if needed)
-      const effectiveFrom = new Date(now)
-      effectiveFrom.setMonth(effectiveFrom.getMonth() + installmentNumber - 1)
+      const effectiveAt = new Date(now)
+      effectiveAt.setMonth(effectiveAt.getMonth() + installmentNumber - 1)
 
       return {
         installmentNumber,
         originalAmount,
         originalCurrency: data.currency,
-        effectiveFrom,
+        effectiveAt,
       }
     })
 
@@ -312,12 +314,15 @@ async function createCreditCardUsage(formData: FormData) {
           },
         },
         transactions: {
-          create: creditCardTransactions.map((transaction) => ({
-            ...transaction,
+          create: installments.map((installment) => ({
+            installmentNumber: installment.installmentNumber,
+            originalAmount: installment.originalAmount,
+            originalCurrency: installment.originalCurrency,
             transaction: {
               create: {
                 type: 'CREDIT_CARD',
                 createdAt: now,
+                effectiveAt: installment.effectiveAt,
               },
             },
             card: {
