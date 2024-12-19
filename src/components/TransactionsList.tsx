@@ -17,10 +17,60 @@ function TransactionsList({
 }: {
   transactions: Array<Transaction>
 }) {
+  const transactionsMap = transactions.reduce<
+    Map<number, Map<number, Array<Transaction>>>
+  >((map, transaction) => {
+    const date = transaction.effectiveAt
+    const year = date.getFullYear()
+    const month = date.getMonth()
+
+    // TODO ✋ refactor
+
+    if (!map.has(year)) {
+      map.set(year, new Map())
+    }
+
+    if (!map.get(year)?.has(month)) {
+      map.get(year)?.set(month, [])
+    }
+
+    map.get(year)?.get(month)?.push(transaction)
+
+    return map
+  }, new Map())
+
   return (
-    <ol className="flex flex-col gap-2">
-      {transactions.map((transaction) => (
-        <TransactionListItem key={transaction.id} transaction={transaction} />
+    <ol>
+      {Array.from(transactionsMap).map(([year, monthsMap]) => (
+        <li key={year}>
+          <ol className="flex flex-col gap-3">
+            {Array.from(monthsMap).map(([month, transactions]) => {
+              const isCurrentMonth = new Date().getMonth() === month
+
+              // e.g. "December 2024"
+              const transactionsGroupLabel = new Intl.DateTimeFormat('en', {
+                month: 'long',
+                year: 'numeric',
+              }).format(new Date(year, month))
+
+              return (
+                <li key={`${year}-${month}`} className="flex flex-col gap-2">
+                  <span className="text-sm font-medium text-gray-500">
+                    {isCurrentMonth ? 'This month' : transactionsGroupLabel}
+                  </span>
+                  <ol className="flex flex-col gap-2">
+                    {transactions.map((transaction) => (
+                      <TransactionListItem
+                        key={transaction.id}
+                        transaction={transaction}
+                      />
+                    ))}
+                  </ol>
+                </li>
+              )
+            })}
+          </ol>
+        </li>
       ))}
     </ol>
   )

@@ -267,7 +267,7 @@ async function Transactions() {
           <NewTransactionForms jars={jars} accounts={accounts} cards={cards} />
 
           {hasTransactions && (
-            <Tabs.Root defaultValue="history">
+            <Tabs.Root defaultValue="history" className="flex flex-col gap-4">
               <Tabs.List>
                 <Tabs.Trigger value="history">History</Tabs.Trigger>
                 <Tabs.Trigger value="upcoming">Upcoming</Tabs.Trigger>
