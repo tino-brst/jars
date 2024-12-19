@@ -8,6 +8,7 @@ import { ArrowRightIcon } from '@/components/icons/ArrowRightIcon'
 import { CreditCardIcon } from '@/components/icons/CreditCardIcon'
 
 import { Transaction } from '@/app/transactions/page'
+import { CreditCardUpIcon } from './icons/CreditCardUpIcon'
 
 function TransactionsList({
   transactions,
@@ -136,7 +137,7 @@ function TransactionListItem({ transaction }: { transaction: Transaction }) {
           <li className="flex min-h-16 items-center justify-between rounded-xl bg-gray-100 px-3 py-2">
             <div className="flex items-center gap-3">
               <div className="flex w-fit items-center justify-center rounded-full bg-gray-200 p-2">
-                <CreditCardIcon size={20} />
+                <CreditCardUpIcon size={20} />
               </div>
               <div className="flex flex-col">
                 <p className="font-medium">{transaction.usage.description}</p>
