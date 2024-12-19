@@ -18,8 +18,10 @@ function Input({
   return (
     <input
       type={type}
-      required={required}
       name={name}
+      required={required}
+      min={min}
+      max={max}
       placeholder={[
         placeholder + (required ? '*' : ''),
         min !== undefined || max !== undefined
