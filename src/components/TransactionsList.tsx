@@ -141,10 +141,17 @@ function TransactionListItem({ transaction }: { transaction: Transaction }) {
               </div>
               <div className="flex flex-col">
                 <p className="font-medium">{transaction.usage.description}</p>
-                <p className="text-xs font-medium text-gray-400">
-                  Installment {transaction.installmentNumber} of{' '}
-                  {transaction.usage.installmentsCount}
-                </p>
+                {transaction.usage.installmentsCount === 1 && (
+                  <p className="text-xs font-medium text-gray-400">
+                    Single payment
+                  </p>
+                )}
+                {transaction.usage.installmentsCount > 1 && (
+                  <p className="text-xs font-medium text-gray-400">
+                    Installment {transaction.installmentNumber} of{' '}
+                    {transaction.usage.installmentsCount}
+                  </p>
+                )}
               </div>
             </div>
             <div className="flex flex-col items-end">
