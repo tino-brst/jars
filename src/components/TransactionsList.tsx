@@ -1,11 +1,8 @@
-import { Fragment } from 'react'
-
 import { ArrowDownLeftIcon } from '@/components/icons/ArrowDownLeftIcon'
 import { ArrowUpRightIcon } from '@/components/icons/ArrowUpRightIcon'
 import { CoinsStacked03Icon } from '@/components/icons/CoinsStacked03Icon'
 import { SwitchHorizontal01Icon } from '@/components/icons/SwitchHorizontal01Icon'
 
-import { twMerge } from 'tailwind-merge'
 import { PlusIcon } from '@/components/icons/PlusIcon'
 import { ArrowRightIcon } from '@/components/icons/ArrowRightIcon'
 import { CreditCardIcon } from '@/components/icons/CreditCardIcon'
@@ -99,7 +96,7 @@ function TransactionListItem({ transaction }: { transaction: Transaction }) {
               {!!transaction.amount && (
                 <PlusIcon size={12} strokeWidth={3} className="text-gray-400" />
               )}
-              <p className="text-lg font-medium">
+              <p className="font-medium">
                 {transaction.amount / 100}{' '}
                 <span className="text-base text-gray-400">
                   {transaction.jar.currency}
@@ -120,7 +117,7 @@ function TransactionListItem({ transaction }: { transaction: Transaction }) {
             <p className="font-medium">{transaction.description}</p>
           </div>
           <div className="flex flex-col items-end">
-            <p className="text-lg font-medium">
+            <p className="font-medium">
               {Math.abs(transaction.amount / 100)}{' '}
               <span className="text-base text-gray-400">
                 {transaction.jar.currency}
@@ -150,7 +147,7 @@ function TransactionListItem({ transaction }: { transaction: Transaction }) {
               </div>
             </div>
             <div className="flex flex-col items-end">
-              <p className="text-lg font-medium">
+              <p className="font-medium">
                 {Math.abs(transaction.originalAmount / 100)}{' '}
                 <span className="text-base text-gray-400">
                   {transaction.originalCurrency}
@@ -173,7 +170,7 @@ function TransactionListItem({ transaction }: { transaction: Transaction }) {
             <p className="font-medium">{transaction.counterparty}</p>
           </div>
           <div className="flex flex-col items-end">
-            <p className="text-lg font-medium">
+            <p className="font-medium">
               {Math.abs(transaction.amount / 100)}{' '}
               <span className="text-base text-gray-400">
                 {transaction.jar.currency}
@@ -201,7 +198,7 @@ function TransactionListItem({ transaction }: { transaction: Transaction }) {
               {!!transaction.amount && (
                 <PlusIcon size={12} strokeWidth={3} className="text-gray-400" />
               )}
-              <p className={twMerge('text-lg font-medium')}>
+              <p className="font-medium">
                 {transaction.amount / 100}{' '}
                 <span className="text-base text-gray-400">
                   {transaction.jar.currency}
@@ -248,7 +245,7 @@ function TransactionListItem({ transaction }: { transaction: Transaction }) {
             </div>
           </div>
           <div className="flex flex-col items-end">
-            <p className="text-lg font-medium">
+            <p className="font-medium">
               {Math.abs(transaction.toAmount / 100)}{' '}
               <span className="text-base text-gray-400">
                 {transaction.toJar.currency}
