@@ -78,7 +78,7 @@ function TransactionsList({
 
 function TransactionListItem({ transaction }: { transaction: Transaction }) {
   return (
-    <Fragment key={transaction.id}>
+    <>
       {transaction.type === 'INIT' && (
         <li className="flex min-h-16 items-center justify-between rounded-xl bg-gray-100 px-3 py-2">
           <div className="flex items-center gap-3">
@@ -271,7 +271,7 @@ function TransactionListItem({ transaction }: { transaction: Transaction }) {
           </div>
         </li>
       )}
-    </Fragment>
+    </>
   )
 }
 
